@@ -157,15 +157,15 @@ export const TermsOfService: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
 export const ContactUs: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
-    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', subject: 'General Inquiry', message: '' });
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setStatus('sending');
-        const success = await emailService.sendContactEmail(formData.name, formData.email, formData.message);
+        const success = await emailService.sendContactEmail(formData.name, formData.email, `[${formData.subject}] ${formData.message}`);
         if (success) {
             setStatus('success');
-            setFormData({ name: '', email: '', message: '' });
+            setFormData({ name: '', email: '', subject: 'General Inquiry', message: '' });
         } else {
             setStatus('error');
         }
@@ -174,57 +174,111 @@ export const ContactUs: React.FC<{ onBack: () => void }> = ({ onBack }) => {
     return (
         <div className="max-w-4xl mx-auto px-6 py-20 animate-fade-in">
             <button onClick={onBack} className="text-[#7D8FED] text-[10px] font-black uppercase tracking-widest mb-8 hover:underline">← Back to Hub</button>
-            <h1 className="text-5xl font-black text-white mb-12 tracking-tighter uppercase">Contact Us</h1>
-            <div className="bg-slate-900 border border-slate-800 rounded-[3rem] p-12">
-                <p className="text-slate-400 mb-8">Have questions about the platform or want to partner with us? Reach out below.</p>
-                
-                {status === 'success' ? (
-                    <div className="text-center py-12">
-                        <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/30">
-                            <CheckCircleIcon className="w-10 h-10 text-emerald-500" />
+            <div className="flex flex-col md:flex-row gap-12">
+                <div className="flex-1">
+                    <h1 className="text-5xl font-black text-white mb-6 tracking-tighter uppercase leading-none">Get in <br /><span className="text-[#7D8FED]">Touch.</span></h1>
+                    <p className="text-slate-400 mb-8 leading-relaxed">
+                        Have questions about the platform, technical integration, or interested in becoming a verified partner? Our team is ready to help you scale your maker ecosystem.
+                    </p>
+                    
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-4 p-4 bg-slate-900/50 border border-slate-800 rounded-2xl">
+                            <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                                <ShieldIcon className="w-5 h-5 text-emerald-500" />
+                            </div>
+                            <div>
+                                <h4 className="text-white font-bold text-sm">Partner Relations</h4>
+                                <p className="text-slate-500 text-xs">partners@watch1do1.com</p>
+                            </div>
                         </div>
-                        <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">Message Sent!</h2>
-                        <p className="text-slate-400 mb-8">We've received your message and will get back to you shortly.</p>
-                        <button onClick={() => setStatus('idle')} className="px-8 py-3 bg-slate-800 text-white rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-slate-700 transition-all">Send Another</button>
+                        <div className="flex items-center gap-4 p-4 bg-slate-900/50 border border-slate-800 rounded-2xl">
+                            <div className="w-10 h-10 bg-[#7D8FED]/10 rounded-xl flex items-center justify-center border border-[#7D8FED]/20">
+                                <SparkleIcon className="w-5 h-5 text-[#7D8FED]" />
+                            </div>
+                            <div>
+                                <h4 className="text-white font-bold text-sm">Creator Support</h4>
+                                <p className="text-slate-500 text-xs">creators@watch1do1.com</p>
+                            </div>
+                        </div>
                     </div>
-                ) : (
-                    <form className="space-y-6" onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <input 
-                                type="text" 
-                                required
-                                placeholder="Name" 
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full py-4 px-6 bg-slate-800 border border-slate-700 rounded-full text-white outline-none focus:border-[#7D8FED] placeholder:text-slate-400" 
-                            />
-                            <input 
-                                type="email" 
-                                required
-                                placeholder="Email" 
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                className="w-full py-4 px-6 bg-slate-800 border border-slate-700 rounded-full text-white outline-none focus:border-[#7D8FED] placeholder:text-slate-400" 
-                            />
-                        </div>
-                        <textarea 
-                            required
-                            placeholder="Message" 
-                            rows={5} 
-                            value={formData.message}
-                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                            className="w-full py-6 px-8 bg-slate-800 border border-slate-700 rounded-[2rem] text-white outline-none focus:border-[#7D8FED] resize-none placeholder:text-slate-400"
-                        ></textarea>
-                        <button 
-                            type="submit" 
-                            disabled={status === 'sending'}
-                            className="w-full py-4 bg-[#7D8FED] text-white rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-[#6b7ae6] transition-all disabled:opacity-50"
-                        >
-                            {status === 'sending' ? 'Sending...' : 'Send Message'}
-                        </button>
-                        {status === 'error' && <p className="text-red-500 text-center text-xs font-black uppercase tracking-widest">Failed to send. Please try again.</p>}
-                    </form>
-                )}
+                </div>
+
+                <div className="flex-[1.5]">
+                    <div className="bg-slate-900 border border-slate-800 rounded-[3rem] p-8 md:p-10 shadow-2xl">
+                        {status === 'success' ? (
+                            <div className="text-center py-12">
+                                <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/30">
+                                    <CheckCircleIcon className="w-10 h-10 text-emerald-500" />
+                                </div>
+                                <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">Transmission Received</h2>
+                                <p className="text-slate-400 mb-8 text-sm">We've received your inquiry and will route it to the appropriate department shortly.</p>
+                                <button onClick={() => setStatus('idle')} className="w-full py-4 bg-slate-800 text-white rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-slate-700 transition-all">Send Another</button>
+                            </div>
+                        ) : (
+                            <form className="space-y-4" onSubmit={handleSubmit}>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Name</label>
+                                        <input 
+                                            type="text" 
+                                            required
+                                            placeholder="Your Name" 
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            className="w-full py-4 px-6 bg-slate-800 border border-slate-700 rounded-full text-white outline-none focus:border-[#7D8FED] placeholder:text-slate-600 text-sm" 
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Email</label>
+                                        <input 
+                                            type="email" 
+                                            required
+                                            placeholder="email@example.com" 
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            className="w-full py-4 px-6 bg-slate-800 border border-slate-700 rounded-full text-white outline-none focus:border-[#7D8FED] placeholder:text-slate-600 text-sm" 
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Subject</label>
+                                    <select 
+                                        value={formData.subject}
+                                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                                        className="w-full py-4 px-6 bg-slate-800 border border-slate-700 rounded-full text-white outline-none focus:border-[#7D8FED] text-sm appearance-none cursor-pointer"
+                                    >
+                                        <option value="General Inquiry">General Inquiry</option>
+                                        <option value="Partner/Merchant Inquiry">Partner/Merchant Inquiry</option>
+                                        <option value="Creator Verification">Creator Verification</option>
+                                        <option value="Technical Support">Technical Support</option>
+                                    </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-4">Message</label>
+                                    <textarea 
+                                        required
+                                        placeholder="How can we help you?" 
+                                        rows={4} 
+                                        value={formData.message}
+                                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                        className="w-full py-5 px-6 bg-slate-800 border border-slate-700 rounded-[2rem] text-white outline-none focus:border-[#7D8FED] resize-none placeholder:text-slate-600 text-sm"
+                                    ></textarea>
+                                </div>
+
+                                <button 
+                                    type="submit" 
+                                    disabled={status === 'sending'}
+                                    className="w-full py-5 bg-[#7D8FED] text-white rounded-full font-black uppercase text-xs tracking-widest hover:bg-[#6b7ae6] transition-all disabled:opacity-50 shadow-xl shadow-[#7D8FED]/20 mt-4"
+                                >
+                                    {status === 'sending' ? 'Transmitting...' : 'Send Inquiry'}
+                                </button>
+                                {status === 'error' && <p className="text-rose-500 text-center text-[10px] font-black uppercase tracking-widest mt-4">Transmission Failed. Please retry.</p>}
+                            </form>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );

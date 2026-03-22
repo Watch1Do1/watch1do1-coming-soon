@@ -546,7 +546,7 @@ const App: React.FC = () => {
     if (isInitialLoading) return <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400"><img src={APP_LOGO_PATH} alt="Logo" className="w-12 h-12 object-contain mb-4 animate-pulse" referrerPolicy="no-referrer" /><p className="font-black uppercase text-[10px] tracking-widest">Entering Maker Studio...</p></div>;
 
     if (view === 'home' && !hasInteraction) {
-        return <LandingPage onAnalyzeClick={() => setAnalyzeModalOpen(true)} />;
+        return <LandingPage onAnalyzeClick={() => setAnalyzeModalOpen(true)} onNavigate={setView} />;
     }
 
     return (

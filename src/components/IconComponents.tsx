@@ -1,5 +1,5 @@
 import React from 'react';
-import { LucideIcon, Sparkles, Search, LayoutGrid, ChevronDown, RefreshCw, Medal, Camera, DollarSign, ExternalLink, CheckCircle2, X, Share2, Shield, XCircle, Plus, Scan, Youtube, Image, Link, Play, Lightbulb, Printer } from 'lucide-react';
+import { LucideIcon, Sparkles, Search, LayoutGrid, ChevronDown, RefreshCw, Medal, Camera, DollarSign, ExternalLink, CheckCircle2, X, Share2, Shield, XCircle, Plus, Scan, Youtube, Image, Link, Play, Lightbulb, Printer, BarChart3, QrCode } from 'lucide-react';
 
 export const SparkleIcon = Sparkles;
 export const SearchIcon = Search;
@@ -22,6 +22,8 @@ export const LinkIcon = Link;
 export const PlayIcon = Play;
 export const LightBulbIcon = Lightbulb;
 export const PrinterIcon = Printer;
+export const BarChartIcon = BarChart3;
+export const QrCodeIcon = QrCode;
 
 export const CategoryIcon: React.FC<{ category: string; className?: string }> = ({ category, className }) => {
     return <LayoutGrid className={className} />;

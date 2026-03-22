@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { SparkleIcon, CameraIcon, ShieldIcon, SearchIcon, CheckCircleIcon } from './IconComponents';
+import React, { useState, useRef } from 'react';
+import { SparkleIcon, CameraIcon, ShieldIcon, SearchIcon, CheckCircleIcon, BarChartIcon, DollarSignIcon, QrCodeIcon, CloseIcon, PlayIcon, ScanFrameIcon } from './IconComponents';
 import { dbService } from '../services/dbService';
 import { APP_LOGO_PATH } from '../constants';
 
 interface LandingPageProps {
     onAnalyzeClick: () => void;
+    onNavigate: (view: any) => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onNavigate }) => {
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [activeDetail, setActiveDetail] = useState<'doers' | 'creators' | 'partners' | null>(null);
+    const detailRef = useRef<HTMLDivElement>(null);
 
     const handleWaitlistSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,6 +29,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick }) => {
         } catch (e) {
             setStatus('error');
         }
+    };
+
+    const handleBoxClick = (type: 'doers' | 'creators' | 'partners') => {
+        setActiveDetail(type);
+        setTimeout(() => {
+            detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
     };
 
     return (
@@ -90,28 +100,209 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick }) => {
                     </form>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-                    <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-[2.5rem] hover:border-[#7D8FED]/30 transition-all group">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-20">
+                    <button 
+                        onClick={() => handleBoxClick('doers')}
+                        className={`bg-slate-900/50 border p-8 rounded-[2.5rem] transition-all group text-left ${activeDetail === 'doers' ? 'border-[#7D8FED] bg-[#7D8FED]/5' : 'border-slate-800 hover:border-[#7D8FED]/30'}`}
+                    >
                         <div className="w-12 h-12 bg-[#7D8FED]/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                             <SearchIcon className="w-6 h-6 text-[#7D8FED]" />
                         </div>
                         <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tighter">For DOers</h3>
                         <p className="text-slate-400 text-sm leading-relaxed">Watch projects, get instant kit lists, and follow safety-checked steps. We handle the research so you can focus on the build.</p>
-                    </div>
-                    <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-[2.5rem] hover:border-emerald-500/30 transition-all group">
+                    </button>
+                    <button 
+                        onClick={() => handleBoxClick('creators')}
+                        className={`bg-slate-900/50 border p-8 rounded-[2.5rem] transition-all group text-left ${activeDetail === 'creators' ? 'border-emerald-500 bg-emerald-500/5' : 'border-slate-800 hover:border-emerald-500/30'}`}
+                    >
                         <div className="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                             <SparkleIcon className="w-6 h-6 text-emerald-500" />
                         </div>
                         <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tighter">For Creators</h3>
                         <p className="text-slate-400 text-sm leading-relaxed">Post your build videos and help others learn. Earn direct tips from grateful makers and monetize your expertise through automated kitting.</p>
-                    </div>
-                    <div className="bg-slate-900/50 border border-slate-800 p-8 rounded-[2.5rem] hover:border-amber-500/30 transition-all group">
+                    </button>
+                    <button 
+                        onClick={() => handleBoxClick('partners')}
+                        className={`bg-slate-900/50 border p-8 rounded-[2.5rem] transition-all group text-left ${activeDetail === 'partners' ? 'border-amber-500 bg-amber-500/5' : 'border-slate-800 hover:border-amber-500/30'}`}
+                    >
                         <div className="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                             <ShieldIcon className="w-6 h-6 text-amber-500" />
                         </div>
                         <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tighter">For Partners</h3>
                         <p className="text-slate-400 text-sm leading-relaxed">Integrate your products directly into our AI-powered searches. Reach makers at the exact moment they need your tools or materials.</p>
-                    </div>
+                    </button>
+                </div>
+
+                {/* Detail Sections */}
+                <div ref={detailRef} className="transition-all duration-500">
+                    {activeDetail === 'doers' && (
+                        <div className="bg-slate-900/40 border border-[#7D8FED]/20 rounded-[3rem] p-8 md:p-12 text-left relative overflow-hidden animate-slide-up">
+                            <button onClick={() => setActiveDetail(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white"><CloseIcon className="w-6 h-6" /></button>
+                            <div className="flex flex-col md:flex-row gap-12 items-center">
+                                <div className="flex-1">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#7D8FED]/10 border border-[#7D8FED]/20 rounded-full mb-6">
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-[#7D8FED]">Maker Experience</span>
+                                    </div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6 leading-tight">
+                                        BUILD FASTER WITH <br /><span className="text-[#7D8FED]">AI VISION.</span>
+                                    </h2>
+                                    <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-xl">
+                                        Our AI Vision engine scans any project video to extract the "Logic" behind the build. No more pausing and squinting at screen captures.
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                                        <div className="flex items-start gap-3">
+                                            <ScanFrameIcon className="w-5 h-5 text-[#7D8FED] mt-1" />
+                                            <div>
+                                                <h4 className="text-white font-bold text-sm">Instant Extraction</h4>
+                                                <p className="text-slate-500 text-xs">Get full tool lists and material kits in seconds.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <ShieldIcon className="w-5 h-5 text-[#7D8FED] mt-1" />
+                                            <div>
+                                                <h4 className="text-white font-bold text-sm">Safety Protocols</h4>
+                                                <p className="text-slate-500 text-xs">Automated safety checks for your specific project.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={onAnalyzeClick}
+                                        className="px-8 py-4 bg-white text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-white/10"
+                                    >
+                                        Try AI Vision Beta
+                                    </button>
+                                </div>
+                                <div className="flex-1 bg-slate-950 rounded-2xl border border-slate-800 p-8 flex items-center justify-center">
+                                    <div className="text-center">
+                                        <PlayIcon className="w-16 h-16 text-[#7D8FED] mx-auto mb-4 opacity-50" />
+                                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">AI Scanning in Progress...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeDetail === 'creators' && (
+                        <div className="bg-slate-900/40 border border-emerald-500/20 rounded-[3rem] p-8 md:p-12 text-left relative overflow-hidden animate-slide-up">
+                            <button onClick={() => setActiveDetail(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white"><CloseIcon className="w-6 h-6" /></button>
+                            <div className="flex flex-col md:flex-row gap-12 items-center">
+                                <div className="flex-1">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full mb-6">
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Creator Economy</span>
+                                    </div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6 leading-tight">
+                                        MONETIZE YOUR <br /><span className="text-emerald-500">EXPERTISE.</span>
+                                    </h2>
+                                    <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-xl">
+                                        Turn your build videos into a revenue stream. We provide the tools for direct community support and automated kitting.
+                                    </p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                                        <div className="flex items-start gap-3">
+                                            <QrCodeIcon className="w-5 h-5 text-emerald-500 mt-1" />
+                                            <div>
+                                                <h4 className="text-white font-bold text-sm">Direct Tipping</h4>
+                                                <p className="text-slate-500 text-xs">Upload your QR code for instant Venmo/PayPal tips.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <DollarSignIcon className="w-5 h-5 text-emerald-500 mt-1" />
+                                            <div>
+                                                <h4 className="text-white font-bold text-sm">Revenue Sharing</h4>
+                                                <p className="text-slate-500 text-xs">Share in affiliate commissions from partner sales.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => onNavigate('contact')}
+                                        className="px-8 py-4 bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all"
+                                    >
+                                        Join Creator Waitlist
+                                    </button>
+                                </div>
+                                <div className="flex-1 bg-slate-950 rounded-2xl border border-slate-800 p-8 flex flex-col items-center justify-center">
+                                    <QrCodeIcon className="w-32 h-32 text-emerald-500/20 mb-4" />
+                                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Scan to Tip Creator</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeDetail === 'partners' && (
+                        <div className="bg-slate-900/40 border border-amber-500/20 rounded-[3rem] p-8 md:p-12 text-left relative overflow-hidden animate-slide-up">
+                            <button onClick={() => setActiveDetail(null)} className="absolute top-8 right-8 text-slate-500 hover:text-white"><CloseIcon className="w-6 h-6" /></button>
+                            <div className="flex flex-col md:flex-row gap-12 items-center relative z-10">
+                                <div className="flex-1">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full mb-6">
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-amber-400">Partner Ecosystem</span>
+                                    </div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6 leading-tight">
+                                        IN-HOUSE <span className="text-amber-500">COMMERCE</span> <br /> ENGINE.
+                                    </h2>
+                                    <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-xl">
+                                        Keep customers in-house with native checkout. Our AI Vision engine learns your catalog to recommend products at the perfect moment of discovery.
+                                    </p>
+                                    
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                                        <div className="flex items-start gap-3">
+                                            <BarChartIcon className="w-5 h-5 text-amber-500 mt-1" />
+                                            <div>
+                                                <h4 className="text-white font-bold text-sm">Performance Console</h4>
+                                                <p className="text-slate-500 text-xs">Track SKU performance across the entire system.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <ScanFrameIcon className="w-5 h-5 text-amber-500 mt-1" />
+                                            <div>
+                                                <h4 className="text-white font-bold text-sm">AI Catalog Sync</h4>
+                                                <p className="text-slate-500 text-xs">Your products automatically tagged in any video.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col sm:flex-row gap-4">
+                                        <button 
+                                            onClick={() => onNavigate('contact')}
+                                            className="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-amber-500/20"
+                                        >
+                                            Partner Inquiry
+                                        </button>
+                                        <div className="flex items-center gap-2 px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl">
+                                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
+                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Multi-Brand Checkout Enabled</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex-1 w-full max-w-md">
+                                    <div className="bg-slate-950 rounded-2xl border border-slate-800 p-6 shadow-2xl transform hover:-translate-y-2 transition-transform duration-500">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <div className="h-2 w-24 bg-slate-800 rounded-full"></div>
+                                            <div className="h-6 w-6 rounded-full bg-amber-500/20 border border-amber-500/40"></div>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <div className="h-20 bg-slate-900/50 rounded-xl border border-slate-800/50 p-4">
+                                                <div className="flex justify-between items-end h-full">
+                                                    {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
+                                                        <div key={i} className="w-3 bg-amber-500/40 rounded-t-sm" style={{ height: `${h}%` }}></div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="h-16 bg-slate-900/50 rounded-xl border border-slate-800/50 p-3">
+                                                    <div className="h-2 w-12 bg-slate-800 rounded-full mb-2"></div>
+                                                    <div className="h-4 w-16 bg-amber-500/20 rounded-md"></div>
+                                                </div>
+                                                <div className="h-16 bg-slate-900/50 rounded-xl border border-slate-800/50 p-3">
+                                                    <div className="h-2 w-12 bg-slate-800 rounded-full mb-2"></div>
+                                                    <div className="h-4 w-16 bg-amber-500/20 rounded-md"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
