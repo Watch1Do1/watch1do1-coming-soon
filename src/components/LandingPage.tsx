@@ -5,29 +5,46 @@ import { APP_LOGO_PATH } from '../constants';
 
 interface LandingPageProps {
     onAnalyzeClick: () => void;
+    onSampleClick: () => void;
     onNavigate: (view: any) => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onNavigate }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick, onNavigate }) => {
     const [email, setEmail] = useState('');
+    const [creatorEmail, setCreatorEmail] = useState('');
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [creatorStatus, setCreatorStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [activeDetail, setActiveDetail] = useState<'doers' | 'creators' | 'partners' | null>(null);
     const detailRef = useRef<HTMLDivElement>(null);
 
-    const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    const handleWaitlistSubmit = async (e: React.FormEvent, type: string = 'maker') => {
         e.preventDefault();
-        if (!email) return;
-        setStatus('loading');
+        const emailToUse = type === 'creator' ? creatorEmail : email;
+        if (!emailToUse) return;
+        
+        if (type === 'creator') setCreatorStatus('loading');
+        else setStatus('loading');
+
         try {
-            const result = await dbService.addToWaitlist(email);
+            const result = type === 'creator_network' 
+                ? await dbService.addToCreatorWaitlist(emailToUse)
+                : await dbService.addToWaitlist(emailToUse, type);
+
             if (result.success) {
-                setStatus('success');
-                setEmail('');
+                if (type === 'creator_network' || type === 'creator') {
+                    setCreatorStatus('success');
+                    setCreatorEmail('');
+                } else {
+                    setStatus('success');
+                    setEmail('');
+                }
             } else {
-                setStatus('error');
+                if (type === 'creator') setCreatorStatus('error');
+                else setStatus('error');
             }
         } catch (e) {
-            setStatus('error');
+            if (type === 'creator') setCreatorStatus('error');
+            else setStatus('error');
         }
     };
 
@@ -51,7 +68,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onNavigate })
 
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#7D8FED]/10 border border-[#7D8FED]/20 rounded-full mb-8 animate-bounce-subtle">
                     <SparkleIcon className="w-4 h-4 text-[#7D8FED]" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#7D8FED]">Coming Soon to the Maker Community</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#7D8FED]">Early Access Beta Live</span>
                 </div>
 
                 <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9]">
@@ -63,7 +80,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onNavigate })
                     Watch1Do1 uses AI to instantly extract tool lists, material kits, and safety protocols from any project video. Stop searching, start building.
                 </p>
 
-                <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-20">
+                <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-12">
                     <button 
                         onClick={onAnalyzeClick}
                         className="group relative px-10 py-5 bg-white text-slate-950 rounded-full font-black uppercase text-xs tracking-widest hover:scale-105 transition-all shadow-2xl shadow-white/10"
@@ -74,7 +91,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onNavigate })
                         </div>
                     </button>
 
-                    <form onSubmit={handleWaitlistSubmit} className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md">
+                    <button 
+                        onClick={onSampleClick}
+                        className="group relative px-10 py-5 bg-slate-900 text-white border border-slate-800 rounded-full font-black uppercase text-xs tracking-widest hover:bg-slate-800 transition-all"
+                    >
+                        <div className="flex items-center gap-3">
+                            <PlayIcon className="w-5 h-5 text-[#7D8FED]" />
+                            See Sample Result
+                        </div>
+                    </button>
+
+                    <form onSubmit={(e) => handleWaitlistSubmit(e)} className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md">
                         <div className="relative w-full">
                             <input 
                                 type="email" 
@@ -95,9 +122,30 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onNavigate })
                             disabled={status === 'loading' || status === 'success'}
                             className="w-full sm:w-auto px-8 py-5 bg-[#7D8FED] text-white rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-[#6b7ae6] transition-all disabled:opacity-50 whitespace-nowrap"
                         >
-                            {status === 'loading' ? 'Joining...' : status === 'success' ? 'Joined!' : 'Join Waitlist'}
+                            {status === 'loading' ? 'Joining...' : status === 'success' ? 'Joined!' : 'Stay in the loop'}
                         </button>
                     </form>
+                </div>
+
+                {/* Live Activity Ticker */}
+                <div className="mb-20 flex flex-col items-center">
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Activity</span>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-4 opacity-60 hover:opacity-100 transition-opacity">
+                        {[
+                            { user: "Maker_42", action: "extracted tool list", time: "2m ago" },
+                            { user: "CraftyJane", action: "generated material kit", time: "5m ago" },
+                            { user: "WoodWorkPro", action: "scanned safety protocol", time: "12m ago" }
+                        ].map((item, i) => (
+                            <div key={i} className="px-4 py-2 bg-slate-900/50 border border-slate-800 rounded-full flex items-center gap-3 text-[10px]">
+                                <span className="text-white font-bold">{item.user}</span>
+                                <span className="text-slate-500 uppercase tracking-tighter">{item.action}</span>
+                                <span className="text-[#7D8FED] font-black">{item.time}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-20">
@@ -212,12 +260,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onNavigate })
                                             </div>
                                         </div>
                                     </div>
-                                    <button 
-                                        onClick={() => onNavigate('contact')}
-                                        className="px-8 py-4 bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all"
-                                    >
-                                        Join Creator Waitlist
-                                    </button>
+                                    <div className="flex flex-col gap-4 max-w-md">
+                                        <div className="flex flex-col sm:flex-row gap-3">
+                                            <input 
+                                                type="email" 
+                                                placeholder="Creator Email" 
+                                                value={creatorEmail}
+                                                onChange={(e) => setCreatorEmail(e.target.value)}
+                                                className="flex-1 py-4 px-6 bg-slate-800/50 border border-slate-700 rounded-xl text-white outline-none focus:border-emerald-500 transition-all placeholder:text-slate-500 text-sm"
+                                            />
+                                            <button 
+                                                onClick={(e) => handleWaitlistSubmit(e as any, 'creator_network')}
+                                                disabled={creatorStatus === 'loading' || creatorStatus === 'success'}
+                                                className="px-8 py-4 bg-emerald-500 text-slate-950 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all disabled:opacity-50"
+                                            >
+                                                {creatorStatus === 'loading' ? 'Joining...' : creatorStatus === 'success' ? 'Joined!' : 'Join Network'}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="flex-1 bg-slate-950 rounded-2xl border border-slate-800 p-8 flex flex-col items-center justify-center">
                                     <QrCodeIcon className="w-32 h-32 text-emerald-500/20 mb-4" />

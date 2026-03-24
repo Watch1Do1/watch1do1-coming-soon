@@ -66,14 +66,14 @@ export const dbService = {
         }
     },
     // Waitlist signup
-    addToWaitlist: async (email: string) => {
-        console.log(`Waitlist signup for: ${email}`);
+    addToWaitlist: async (email: string, type: string = 'maker') => {
+        console.log(`Waitlist signup for: ${email} (${type})`);
         try {
             const supabase = getSupabase();
             if (supabase) {
                 const { error } = await supabase
                     .from('waitlist')
-                    .insert([{ email, created_at: new Date().toISOString() }]);
+                    .insert([{ email, type, created_at: new Date().toISOString() }]);
                 if (error) throw error;
                 return { success: true };
             } else {
@@ -83,7 +83,28 @@ export const dbService = {
             console.error('Supabase waitlist error:', e);
             // Fallback to local storage for demo purposes if Supabase fails
             const waitlist = JSON.parse(localStorage.getItem('w1d1_waitlist') || '[]');
-            localStorage.setItem('w1d1_waitlist', JSON.stringify([...waitlist, { email, ts: new Date().toISOString() }]));
+            localStorage.setItem('w1d1_waitlist', JSON.stringify([...waitlist, { email, type, ts: new Date().toISOString() }]));
+            return { success: true, local: true };
+        }
+    },
+    // Creator specific waitlist
+    addToCreatorWaitlist: async (email: string) => {
+        console.log(`Creator Network signup for: ${email}`);
+        try {
+            const supabase = getSupabase();
+            if (supabase) {
+                const { error } = await supabase
+                    .from('creator_waitlist')
+                    .insert([{ email, created_at: new Date().toISOString() }]);
+                if (error) throw error;
+                return { success: true };
+            } else {
+                throw new Error('Supabase not configured');
+            }
+        } catch (e) {
+            console.error('Supabase creator waitlist error:', e);
+            const waitlist = JSON.parse(localStorage.getItem('w1d1_creator_waitlist') || '[]');
+            localStorage.setItem('w1d1_creator_waitlist', JSON.stringify([...waitlist, { email, ts: new Date().toISOString() }]));
             return { success: true, local: true };
         }
     }

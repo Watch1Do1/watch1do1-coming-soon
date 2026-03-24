@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({
                 </button>
                 
                 <div className="flex items-center gap-4">
-                    <button onClick={onSignupClick} className="bg-[#7D8FED] text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#6b7ae6] transition-all shadow-lg shadow-[#7D8FED]/20">Join Waitlist</button>
+                    <button onClick={onSignupClick} className="bg-[#7D8FED] text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#6b7ae6] transition-all shadow-lg shadow-[#7D8FED]/20">Stay in the loop</button>
                 </div>
             </div>
         </header>

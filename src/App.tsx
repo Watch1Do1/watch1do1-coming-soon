@@ -98,6 +98,37 @@ const generateVideoThumbnail = (file: File): Promise<string> => {
 
 import { APP_LOGO_PATH, APP_NAME } from './constants';
 
+const SAMPLE_VIDEO: Video = {
+    id: 1,
+    title: "Modern Floating Shelf Build",
+    creator: "Master Maker",
+    creatorId: "sample@watch1do1.com",
+    status: 'published',
+    category: 'Home Improvement',
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    thumbnailUrl: "https://picsum.photos/seed/shelf/800/450",
+    products: [
+        { id: 'p1', name: "DeWalt Cordless Drill", price: { amount: 129.99, currency: 'USD' }, imageUrl: "https://picsum.photos/seed/drill/200/200", purchaseUrl: "#", retailer: "Home Depot", sourceType: 'affiliate' },
+        { id: 'p2', name: "Oak Wood Plank", price: { amount: 24.50, currency: 'USD' }, imageUrl: "https://picsum.photos/seed/wood/200/200", purchaseUrl: "#", retailer: "Lowe's", sourceType: 'affiliate' }
+    ],
+    complementaryProducts: [],
+    insights: {
+        difficulty: 'Medium',
+        timeEstimate: "2-3 Hours",
+        costEstimate: { low: 50, high: 150, currency: 'USD' },
+        safetyRating: 4.5,
+        safetyProtocols: [
+            { hazard: "Dust", prevention: "Wear a mask", requiredGear: ["N95 Mask"] },
+            { hazard: "Sharp Edges", prevention: "Use gloves", requiredGear: ["Safety Gloves"] }
+        ],
+        toolsRequired: ["Drill", "Saw", "Level"],
+        materialsRequired: ["Oak Wood", "Wall Anchors", "Stain"]
+    },
+    activeBuilders: 12,
+    rating: 4.8,
+    ratingCount: 156
+};
+
 const App: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -246,6 +277,13 @@ const App: React.FC = () => {
       trackEvent('video_view', { videoId: video.id });
   };
 
+  const handleSampleClick = () => {
+      const sample = videos.find(v => v.id === 1) || SAMPLE_VIDEO;
+      setSelectedVideo(sample);
+      setView('videoPlayer');
+      trackEvent('sample_view', { videoId: sample.id });
+  };
+
   const handleAnalysisLogic = async (type: UploadType, val: File[] | string, cat: ProjectCategory, userOverride?: User | null) => {
     console.log("handleAnalysisLogic triggered:", { type, cat, hasUserOverride: !!userOverride, hasCurrentUser: !!currentUser });
     
@@ -257,13 +295,7 @@ const App: React.FC = () => {
     
     const effectiveUser = userOverride !== undefined ? userOverride : currentUser;
     
-    if(!effectiveUser) { 
-        console.log("No user found, setting pending analysis and opening auth modal.");
-        setPendingAnalysis({ type, val, cat });
-        setAuthModalMode('signup'); 
-        return; 
-    }
-    
+    // Guest mode enabled: Proceed even if no user is found to reduce friction
     console.log("Starting analysis process...");
     setPendingAnalysis(null); 
     setIsLoading(true); 
@@ -346,8 +378,8 @@ const App: React.FC = () => {
         console.log("AI Insights generated:", insights);
         const newVideo: Video = { 
             id: Date.now(), 
-            creator: "AI", 
-            creatorId: "ai@watch1do1.com", 
+            creator: effectiveUser?.displayName || "Guest Maker", 
+            creatorId: effectiveUser?.email || "guest@watch1do1.com", 
             status: 'published', 
             sourceType: 'external',
             category: cat, 
@@ -376,10 +408,12 @@ const App: React.FC = () => {
         setSelectedVideo(newVideo); 
         setView('videoPlayer'); 
         addXP(50, "Vision Usage");
+        trackEvent('ai_vision_success', { type, category: cat, isGuest: !effectiveUser });
     } catch (e: any) { 
         console.error("Analysis failed:", e);
         const msg = e?.message?.includes("AI_TIMEOUT") ? "Analysis timed out. Please try again." : "Analysis failed. Please check your input and try again.";
         showToast(msg, "error");
+        trackEvent('ai_vision_error', { type, error: String(e), isGuest: !effectiveUser });
     } finally { 
         setIsLoading(false); 
         stopRotatingLoadingMessages(); 
@@ -546,7 +580,7 @@ const App: React.FC = () => {
     if (isInitialLoading) return <div className="flex flex-col items-center justify-center h-[60vh] text-slate-400"><img src={APP_LOGO_PATH} alt="Logo" className="w-12 h-12 object-contain mb-4 animate-pulse" referrerPolicy="no-referrer" /><p className="font-black uppercase text-[10px] tracking-widest">Entering Maker Studio...</p></div>;
 
     if (view === 'home' && !hasInteraction) {
-        return <LandingPage onAnalyzeClick={() => setAnalyzeModalOpen(true)} onNavigate={setView} />;
+        return <LandingPage onAnalyzeClick={() => setAnalyzeModalOpen(true)} onSampleClick={handleSampleClick} onNavigate={setView} />;
     }
 
     return (
