@@ -19,10 +19,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
 
     const handleWaitlistSubmit = async (e: React.FormEvent, type: string = 'maker') => {
         e.preventDefault();
-        const emailToUse = type === 'creator' ? creatorEmail : email;
+        const isCreatorType = type === 'creator' || type === 'creator_network';
+        const emailToUse = isCreatorType ? creatorEmail : email;
         if (!emailToUse) return;
         
-        if (type === 'creator') setCreatorStatus('loading');
+        if (isCreatorType) setCreatorStatus('loading');
         else setStatus('loading');
 
         try {
@@ -31,7 +32,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                 : await dbService.addToWaitlist(emailToUse, type);
 
             if (result.success) {
-                if (type === 'creator_network' || type === 'creator') {
+                if (isCreatorType) {
                     setCreatorStatus('success');
                     setCreatorEmail('');
                 } else {
@@ -39,11 +40,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                     setEmail('');
                 }
             } else {
-                if (type === 'creator') setCreatorStatus('error');
+                if (isCreatorType) setCreatorStatus('error');
                 else setStatus('error');
             }
         } catch (e) {
-            if (type === 'creator') setCreatorStatus('error');
+            if (isCreatorType) setCreatorStatus('error');
             else setStatus('error');
         }
     };
@@ -261,22 +262,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-4 max-w-md">
-                                        <div className="flex flex-col sm:flex-row gap-3">
+                                        <form onSubmit={(e) => handleWaitlistSubmit(e, 'creator_network')} className="flex flex-col sm:flex-row gap-3">
                                             <input 
                                                 type="email" 
+                                                required
                                                 placeholder="Creator Email" 
                                                 value={creatorEmail}
                                                 onChange={(e) => setCreatorEmail(e.target.value)}
                                                 className="flex-1 py-4 px-6 bg-slate-800/50 border border-slate-700 rounded-xl text-white outline-none focus:border-emerald-500 transition-all placeholder:text-slate-500 text-sm"
                                             />
                                             <button 
-                                                onClick={(e) => handleWaitlistSubmit(e as any, 'creator_network')}
+                                                type="submit"
                                                 disabled={creatorStatus === 'loading' || creatorStatus === 'success'}
                                                 className="px-8 py-4 bg-emerald-500 text-slate-950 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all disabled:opacity-50"
                                             >
                                                 {creatorStatus === 'loading' ? 'Joining...' : creatorStatus === 'success' ? 'Joined!' : 'Join Network'}
                                             </button>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                                 <div className="flex-1 bg-slate-950 rounded-2xl border border-slate-800 p-8 flex flex-col items-center justify-center">
