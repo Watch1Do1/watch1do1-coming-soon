@@ -66,6 +66,11 @@ async function startServer() {
   app.use(express.json());
 
   // API routes
+  app.get("/api/ping", (req, res) => {
+    console.log("Ping received at", new Date().toISOString());
+    res.json({ status: "ok", time: new Date().toISOString() });
+  });
+
   app.post("/api/contact", async (req, res) => {
     const { name, email, message } = req.body;
     const resendClient = getResend();
@@ -132,18 +137,26 @@ async function startServer() {
   app.get("/api/ebay/account-deletion", (req, res) => {
     const challengeCode = (req.query.challenge_code as string)?.trim();
     const verificationToken = process.env.EBAY_DELETION_VERIFICATION_TOKEN?.trim();
-    const endpoint = (process.env.EBAY_DELETION_ENDPOINT || "https://www.watch1do1.com/api/ebay/account-deletion").trim();
+    
+    // Dynamically determine the endpoint URL if not explicitly set
+    const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+    const host = req.headers['host'];
+    const currentUrl = `${protocol}://${host}${req.path}`;
+    const endpoint = (process.env.EBAY_DELETION_ENDPOINT || currentUrl).trim();
 
-    console.log("eBay Account Deletion Validation Request Received");
+    console.log("--- eBay Account Deletion Validation ---");
+    console.log("Time:", new Date().toISOString());
     console.log("Challenge Code:", challengeCode);
     console.log("Verification Token (exists):", !!verificationToken);
-    console.log("Endpoint URL:", endpoint);
+    console.log("Calculated Endpoint URL:", endpoint);
+    console.log("Request Headers:", JSON.stringify(req.headers));
 
     if (!challengeCode || !verificationToken) {
       console.error("Missing challengeCode or verificationToken");
       return res.status(200).json({ 
-        error: "Missing parameters",
-        verificationToken: verificationToken ? "Set" : "Missing" 
+        error: "Missing parameters. To verify, add ?challenge_code=test to the URL.",
+        verificationToken: verificationToken ? "Set (Hidden for security)" : "Missing",
+        calculatedEndpoint: endpoint
       });
     }
 
