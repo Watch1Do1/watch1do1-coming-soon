@@ -337,4 +337,32 @@ export const CheckoutExperience = (props: any) => <Stub name="Checkout" onClose=
 export const AffiliateCheckoutModal = (props: any) => <Stub name="Partner Sync" onClose={props.onClose} />;
 export const EmailKitModal = (props: any) => <Stub name="Email Kit" onClose={props.onClose} />;
 export const ShareModal = (props: any) => <Stub name="Share Build" onClose={props.onClose} />;
-export const AffiliateDisclosure = (props: any) => <div className="p-12 text-center text-white">Affiliate Disclosure <button onClick={props.onBack} className="block mx-auto mt-4 underline">Back</button></div>;
+export const AffiliateDisclosure: React.FC<{ onBack: () => void }> = ({ onBack }) => (
+    <div className="max-w-4xl mx-auto px-6 py-20 animate-fade-in">
+        <button onClick={onBack} className="text-[#7D8FED] text-[10px] font-black uppercase tracking-widest mb-8 hover:underline">← Back to Hub</button>
+        <h1 className="text-5xl font-black text-white mb-12 tracking-tighter uppercase">Affiliate Disclosure</h1>
+        <div className="space-y-8 text-slate-400 leading-relaxed">
+            <section className="bg-slate-900 border border-slate-800 p-8 rounded-[2rem]">
+                <h2 className="text-white font-bold text-xl mb-4">Partner Transparency</h2>
+                <p className="mb-4">
+                    Watch1Do1 is designed to connect makers with the exact tools and materials they need to complete projects. To support this mission, we participate in various affiliate marketing programs.
+                </p>
+                <p className="text-[#7D8FED] font-bold">
+                    Watch1Do1 may earn commissions when users are redirected to partner marketplaces such as eBay. All purchases are completed on the partner’s website.
+                </p>
+            </section>
+            <section>
+                <h2 className="text-white font-bold text-xl mb-4">How it Works</h2>
+                <p>
+                    When our AI identifies a product in a project video, we search for the best available matches across our partner network. If you choose to purchase a product through one of these links, we may receive a small commission at no additional cost to you. This helps us keep the platform running and supports our creator community.
+                </p>
+            </section>
+            <section>
+                <h2 className="text-white font-bold text-xl mb-4">Our Partners</h2>
+                <p>
+                    We work with trusted marketplaces and brands to ensure you get high-quality tools and materials. Our primary goal is accuracy and utility for the maker—we only recommend products that our AI identifies as relevant to the project you are watching.
+                </p>
+            </section>
+        </div>
+    </div>
+);

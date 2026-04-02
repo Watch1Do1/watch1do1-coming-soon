@@ -24,6 +24,7 @@ const Footer: React.FC<{ onNavigate: (v: any) => void }> = ({ onNavigate }) => {
                     <ul className="space-y-4">
                         <li><button onClick={() => onNavigate('terms')} className="text-slate-500 hover:text-[#7D8FED] text-xs transition-colors">Terms</button></li>
                         <li><button onClick={() => onNavigate('privacy')} className="text-slate-500 hover:text-[#7D8FED] text-xs transition-colors">Privacy</button></li>
+                        <li><button onClick={() => onNavigate('disclosure')} className="text-slate-500 hover:text-[#7D8FED] text-xs transition-colors">Affiliate Disclosure</button></li>
                     </ul>
                 </div>
             </div>

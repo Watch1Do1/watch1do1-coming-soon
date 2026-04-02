@@ -600,6 +600,10 @@ const App: React.FC = () => {
                         <button type="submit" className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 p-3 sm:p-4 bg-[#7D8FED] rounded-full hover:bg-[#6b7ae6] shadow-xl"><SearchIcon className="h-5 w-5 sm:h-7 sm:w-7 text-white"/></button>
                     </form>
 
+                    <p className="text-[10px] sm:text-xs font-black text-[#7D8FED] uppercase tracking-[0.2em] mb-12 max-w-lg mx-auto leading-relaxed opacity-80">
+                        We analyze tutorials, videos, and images to identify the exact tools and products needed to complete a project.
+                    </p>
+
                     <div className="relative max-w-sm mx-auto" ref={categoryDropdownRef}>
                         <button 
                             onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}

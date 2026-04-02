@@ -77,8 +77,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                     <span className="text-[#7D8FED]">FOR MAKERS.</span>
                 </h1>
 
-                <p className="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl mx-auto mb-12 leading-relaxed">
+                <p className="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl mx-auto mb-6 leading-relaxed">
                     Watch1Do1 uses AI to instantly extract tool lists, material kits, and safety protocols from any project video. Stop searching, start building.
+                </p>
+
+                <p className="text-sm md:text-base text-[#7D8FED] font-bold max-w-2xl mx-auto mb-12 uppercase tracking-wider">
+                    We analyze tutorials, videos, and images to identify the exact tools and products needed to complete a project.
                 </p>
 
                 <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-12">
@@ -92,15 +96,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                         </div>
                     </button>
 
-                    <button 
-                        onClick={onSampleClick}
-                        className="group relative px-10 py-5 bg-slate-900 text-white border border-slate-800 rounded-full font-black uppercase text-xs tracking-widest hover:bg-slate-800 transition-all"
-                    >
-                        <div className="flex items-center gap-3">
-                            <PlayIcon className="w-5 h-5 text-[#7D8FED]" />
-                            See Sample Result
+                    <div className="relative group">
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-max opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                            <span className="text-[9px] font-black uppercase tracking-widest text-[#7D8FED] bg-[#7D8FED]/10 px-2 py-1 rounded border border-[#7D8FED]/20">Try a sample project</span>
                         </div>
-                    </button>
+                        <button 
+                            onClick={onSampleClick}
+                            className="group relative px-10 py-5 bg-slate-900 text-white border border-slate-800 rounded-full font-black uppercase text-xs tracking-widest hover:bg-slate-800 transition-all"
+                        >
+                            <div className="flex items-center gap-3">
+                                <PlayIcon className="w-5 h-5 text-[#7D8FED]" />
+                                See Sample Result
+                            </div>
+                        </button>
+                    </div>
 
                     <form onSubmit={(e) => handleWaitlistSubmit(e)} className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md">
                         <div className="relative w-full">
