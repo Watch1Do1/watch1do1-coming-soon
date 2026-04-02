@@ -21,7 +21,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     if (!challengeCode || !verificationToken) {
       console.error("Missing challengeCode or verificationToken");
       return res.status(200).json({ 
-        error: "Missing parameters. To verify, add ?challenge_code=test to the URL.",
+        error: `Missing parameters. To verify, add ?challenge_code=test to the ${endpoint} URL.`,
         verificationToken: verificationToken ? "Set (Hidden for security)" : "Missing",
         calculatedEndpoint: endpoint
       });
