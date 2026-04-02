@@ -3,6 +3,7 @@ import { createServer as createViteServer } from "vite";
 import path from "path";
 import { Resend } from "resend";
 import dotenv from "dotenv";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -129,9 +130,22 @@ async function startServer() {
 
   // eBay Marketplace Account Deletion Notification Endpoint
   app.get("/api/ebay/account-deletion", (req, res) => {
+    const challengeCode = req.query.challenge_code as string;
     const verificationToken = process.env.EBAY_DELETION_VERIFICATION_TOKEN;
+    const endpoint = process.env.EBAY_DELETION_ENDPOINT || "https://www.watch1do1.com/api/ebay/account-deletion";
+
+    if (!challengeCode || !verificationToken) {
+      return res.status(200).json({ verificationToken }); // Fallback for manual check
+    }
+
+    const hash = crypto.createHash('sha256');
+    hash.update(challengeCode);
+    hash.update(verificationToken);
+    hash.update(endpoint);
+    const responseHash = hash.digest('hex');
+
     return res.status(200).json({
-      verificationToken: verificationToken,
+      challengeResponse: responseHash
     });
   });
 
