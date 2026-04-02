@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Video, Product, ProjectInsights, User } from '../types';
+import { ebayService, EbayItem } from '../services/ebayService';
 import { 
     SparkleIcon, 
     PlayIcon, 
@@ -29,9 +30,52 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
     console.log("VideoPlayerView rendering with insights:", video.insights);
     const [activeTab, setActiveTab] = useState<'insights' | 'products' | 'safety'>('insights');
     const [isInsightsExpanded, setIsInsightsExpanded] = useState(true);
+    const [ebayProducts, setEbayProducts] = useState<Product[]>([]);
+    const [isSearchingEbay, setIsSearchingEbay] = useState(false);
 
     const insights = video.insights;
     const products = video.products || [];
+
+    useEffect(() => {
+        const fetchEbayProducts = async () => {
+            if (activeTab === 'products' && ebayProducts.length === 0 && insights) {
+                setIsSearchingEbay(true);
+                const searchTerms = [
+                    ...(insights.toolsRequired || []).slice(0, 2),
+                    ...(insights.materialsRequired || []).slice(0, 2)
+                ];
+
+                if (searchTerms.length > 0) {
+                    const allEbayItems: Product[] = [];
+                    for (const term of searchTerms) {
+                        const items = await ebayService.searchItems(term);
+                        const mapped = items.map(item => ({
+                            id: item.itemId,
+                            name: item.title,
+                            brand: 'eBay Partner',
+                            price: {
+                                amount: parseFloat(item.price.value),
+                                currency: item.price.currency
+                            },
+                            imageUrl: item.image?.imageUrl || "https://picsum.photos/seed/ebay/200/200",
+                            purchaseUrl: item.itemWebUrl,
+                            retailer: 'eBay',
+                            sourceType: 'affiliate' as const
+                        }));
+                        allEbayItems.push(...mapped);
+                    }
+                    // Filter unique items by ID
+                    const uniqueItems = Array.from(new Map(allEbayItems.map(item => [item.id, item])).values());
+                    setEbayProducts(uniqueItems);
+                }
+                setIsSearchingEbay(false);
+            }
+        };
+
+        fetchEbayProducts();
+    }, [activeTab, insights, ebayProducts.length]);
+
+    const displayProducts = [...products, ...ebayProducts];
 
     const handlePrint = () => {
         const originalTitle = document.title;
@@ -234,7 +278,7 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
                                     onClick={() => setActiveTab('products')}
                                     className={`flex-1 py-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${activeTab === 'products' ? 'text-[#7D8FED]' : 'text-slate-500'}`}
                                 >
-                                    Kit ({products.length})
+                                    Kit ({displayProducts.length})
                                     {activeTab === 'products' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#7D8FED]" />}
                                 </button>
                                 <button 
@@ -290,7 +334,7 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
 
                                 {activeTab === 'products' && (
                                     <div className="space-y-4 animate-fade-in">
-                                        {products.length > 0 ? products.map((product, i) => (
+                                        {displayProducts.length > 0 ? displayProducts.map((product, i) => (
                                             <a 
                                                 key={i} 
                                                 href={product.purchaseUrl} 
@@ -319,7 +363,15 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
                                         )) : (
                                             <div className="text-center py-12">
                                                 <RefreshCwIcon className="w-8 h-8 text-slate-700 mx-auto mb-4 animate-spin" />
-                                                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Scanning Inventories...</p>
+                                                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                                                    {isSearchingEbay ? 'Searching eBay...' : 'Scanning Inventories...'}
+                                                </p>
+                                            </div>
+                                        )}
+                                        {isSearchingEbay && displayProducts.length > 0 && (
+                                            <div className="flex items-center justify-center gap-2 py-4">
+                                                <RefreshCwIcon className="w-4 h-4 text-[#7D8FED] animate-spin" />
+                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Syncing more eBay results...</span>
                                             </div>
                                         )}
                                     </div>
