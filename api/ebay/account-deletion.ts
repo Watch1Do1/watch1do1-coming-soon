@@ -1,7 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from "crypto";
 
-export default function handler(req: VercelRequest, res: VercelResponse) {
+export default function handler(req: any, res: any) {
   if (req.method === 'GET') {
     const challengeCode = (req.query.challenge_code as string)?.trim();
     const verificationToken = process.env.EBAY_DELETION_VERIFICATION_TOKEN?.trim();

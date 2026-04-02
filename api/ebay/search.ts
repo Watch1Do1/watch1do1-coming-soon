@@ -1,5 +1,3 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
 let ebayToken: { access_token: string; expires_at: number } | null = null;
 
 const getEbayToken = async () => {
@@ -44,7 +42,7 @@ const getEbayToken = async () => {
   return null;
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
   const { q } = req.query;
   if (!q) return res.status(400).json({ error: "Query required" });
 
