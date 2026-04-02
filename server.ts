@@ -130,23 +130,39 @@ async function startServer() {
 
   // eBay Marketplace Account Deletion Notification Endpoint
   app.get("/api/ebay/account-deletion", (req, res) => {
-    const challengeCode = req.query.challenge_code as string;
-    const verificationToken = process.env.EBAY_DELETION_VERIFICATION_TOKEN;
-    const endpoint = process.env.EBAY_DELETION_ENDPOINT || "https://www.watch1do1.com/api/ebay/account-deletion";
+    const challengeCode = (req.query.challenge_code as string)?.trim();
+    const verificationToken = process.env.EBAY_DELETION_VERIFICATION_TOKEN?.trim();
+    const endpoint = (process.env.EBAY_DELETION_ENDPOINT || "https://www.watch1do1.com/api/ebay/account-deletion").trim();
+
+    console.log("eBay Account Deletion Validation Request Received");
+    console.log("Challenge Code:", challengeCode);
+    console.log("Verification Token (exists):", !!verificationToken);
+    console.log("Endpoint URL:", endpoint);
 
     if (!challengeCode || !verificationToken) {
-      return res.status(200).json({ verificationToken }); // Fallback for manual check
+      console.error("Missing challengeCode or verificationToken");
+      return res.status(200).json({ 
+        error: "Missing parameters",
+        verificationToken: verificationToken ? "Set" : "Missing" 
+      });
     }
 
-    const hash = crypto.createHash('sha256');
-    hash.update(challengeCode);
-    hash.update(verificationToken);
-    hash.update(endpoint);
-    const responseHash = hash.digest('hex');
+    try {
+      const hash = crypto.createHash('sha256');
+      hash.update(challengeCode);
+      hash.update(verificationToken);
+      hash.update(endpoint);
+      const responseHash = hash.digest('hex');
 
-    return res.status(200).json({
-      challengeResponse: responseHash
-    });
+      console.log("Generated Hash:", responseHash);
+
+      return res.status(200).json({
+        challengeResponse: responseHash
+      });
+    } catch (error) {
+      console.error("Error generating eBay hash:", error);
+      return res.status(500).json({ error: "Hash generation failed" });
+    }
   });
 
   app.post("/api/ebay/account-deletion", (req, res) => {
