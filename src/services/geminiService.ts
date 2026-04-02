@@ -74,12 +74,92 @@ const safeParseJSON = (text: string | undefined, defaultValue: any = []) => {
 };
 
 /**
+ * V3: Live eBay Search Integration
+ */
+const fetchEbayProduct = async (query: string): Promise<Product | null> => {
+    try {
+        const response = await fetch(`/api/ebay/search?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        if (data.itemSummaries && data.itemSummaries.length > 0) {
+            const item = data.itemSummaries[0];
+            return {
+                id: item.itemId,
+                name: item.title,
+                price: {
+                    amount: parseFloat(item.price.value),
+                    currency: item.price.currency
+                },
+                imageUrl: item.image?.imageUrl || `https://picsum.photos/seed/${encodeURIComponent(item.title)}/400/400`,
+                purchaseUrl: item.itemAffiliateWebUrl || item.itemWebUrl,
+                retailer: "eBay",
+                sourceType: 'affiliate',
+                confidence: 0.95,
+                matchType: 'exact'
+            };
+        }
+    } catch (e) {
+        console.error("eBay Live Search Failed:", e);
+    }
+    return null;
+};
+
+/**
+ * V3: Alternative Retailer Search (Fallback)
+ */
+const fetchAlternativeProduct = async (query: string, preferredRetailer?: string): Promise<Product | null> => {
+    try {
+        const response = await withTimeout(ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: `Find a real purchase URL and current price for: "${query}". ${preferredRetailer ? `Try to find it at ${preferredRetailer}.` : 'Find the best reputable retailer (e.g. Guitar Center, Amazon, Home Depot).'} 
+            Return as JSON with name, brand, price, currency, imageUrl, purchaseUrl, retailer.`,
+            config: { 
+                tools: [{ googleSearch: {} }], 
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        name: { type: Type.STRING },
+                        brand: { type: Type.STRING },
+                        price: { type: Type.NUMBER },
+                        currency: { type: Type.STRING },
+                        imageUrl: { type: Type.STRING },
+                        purchaseUrl: { type: Type.STRING },
+                        retailer: { type: Type.STRING }
+                    },
+                    required: ["name", "price", "purchaseUrl", "retailer"]
+                }
+            }
+        }), 20000);
+        
+        const p = safeParseJSON(response.text, null);
+        if (!p || !p.purchaseUrl) return null;
+
+        return {
+            id: Math.random().toString(36).substr(2, 9),
+            name: p.name,
+            brand: p.brand || "Found",
+            price: { amount: p.price, currency: p.currency || 'USD' },
+            imageUrl: p.imageUrl || `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
+            purchaseUrl: p.purchaseUrl,
+            retailer: p.retailer,
+            sourceType: 'affiliate',
+            confidence: 0.8,
+            matchType: 'similar'
+        };
+    } catch (e) {
+        console.error("Alternative Search Failed:", e);
+        return null;
+    }
+};
+
+/**
  * V3: Core Logic Extraction from Text
  */
 export const generateProductsFromText = async (text: string, category: ProjectCategory): Promise<Product[]> => {
     const prompt = `Analyze this project title/description: "${text}" in category "${category}".
     Identify 3-5 specific tools or materials required. 
-    Return as a JSON array of objects with: name, brand, estimatedPrice (string), retailer (Amazon/Home Depot/eBay), sourceType ('affiliate'), matchType ('exact'|'similar'|'alternative').`;
+    Return as a JSON array of objects with: name, brand, estimatedPrice (string), retailer (Amazon/Home Depot/eBay/Guitar Center), sourceType ('affiliate'), matchType ('exact'|'similar'|'alternative').`;
 
     try {
         const response = await withTimeout(ai.models.generateContent({
@@ -107,18 +187,35 @@ export const generateProductsFromText = async (text: string, category: ProjectCa
         }), 30000);
 
         const raw = safeParseJSON(response.text, []);
-        return raw.map((p: any) => ({
-            id: Math.random().toString(36).substr(2, 9),
-            name: p.name,
-            brand: p.brand || "Generic",
-            price: asMoney(p.estimatedPrice),
-            imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
-            purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(p.brand + ' ' + p.name)}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_ai_gen`,
-            retailer: p.retailer,
-            sourceType: 'affiliate',
-            confidence: 0.85,
-            matchType: p.matchType || 'similar'
+        
+        // Enhance with live search in parallel
+        const enhancedProducts = await Promise.all(raw.map(async (p: any) => {
+            const searchQuery = `${p.brand || ''} ${p.name}`;
+            
+            // Priority 1: eBay live search
+            const liveEbay = await fetchEbayProduct(searchQuery);
+            if (liveEbay) return liveEbay;
+
+            // Priority 2: Alternative retailer search (e.g. Guitar Center)
+            const alternative = await fetchAlternativeProduct(searchQuery, p.retailer);
+            if (alternative) return alternative;
+
+            // Fallback: Static eBay link
+            return {
+                id: Math.random().toString(36).substr(2, 9),
+                name: p.name,
+                brand: p.brand || "Generic",
+                price: asMoney(p.estimatedPrice),
+                imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
+                purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent((p.brand || '') + ' ' + p.name)}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_ai_gen`,
+                retailer: p.retailer || "eBay",
+                sourceType: 'affiliate',
+                confidence: 0.85,
+                matchType: p.matchType || 'similar'
+            };
         }));
+
+        return enhancedProducts;
     } catch (e) {
         console.error("AI Text Analysis Failed:", e);
         return [];
@@ -163,18 +260,34 @@ export const generateProductsFromImages = async (base64s: string[], mimeType: st
         }), 45000);
 
         const raw = safeParseJSON(response.text, []);
-        return raw.map((p: any) => ({
-            id: Math.random().toString(36).substr(2, 9),
-            name: p.name,
-            brand: p.brand || "Detected",
-            price: asMoney(p.estimatedPrice),
-            imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
-            purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(p.brand + ' ' + p.name)}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_visual_gen`,
-            retailer: p.retailer || "Amazon",
-            sourceType: 'affiliate',
-            confidence: 0.9,
-            matchType: p.matchType || 'exact'
+        
+        // Enhance with live search in parallel
+        const enhancedProducts = await Promise.all(raw.map(async (p: any) => {
+            const searchQuery = `${p.brand || ''} ${p.name}`;
+            
+            // Priority 1: eBay live search
+            const liveEbay = await fetchEbayProduct(searchQuery);
+            if (liveEbay) return liveEbay;
+
+            // Priority 2: Alternative retailer search
+            const alternative = await fetchAlternativeProduct(searchQuery, p.retailer);
+            if (alternative) return alternative;
+
+            return {
+                id: Math.random().toString(36).substr(2, 9),
+                name: p.name,
+                brand: p.brand || "Detected",
+                price: asMoney(p.estimatedPrice),
+                imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
+                purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent((p.brand || '') + ' ' + p.name)}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_visual_gen`,
+                retailer: p.retailer || "eBay",
+                sourceType: 'affiliate',
+                confidence: 0.9,
+                matchType: p.matchType || 'exact'
+            };
         }));
+
+        return enhancedProducts;
     } catch (e) {
         console.error("AI Visual Analysis Failed:", e);
         return [];
@@ -213,17 +326,32 @@ export const generateProductsFromUrl = async (url: string, category: ProjectCate
         }), 40000);
         
         const raw = safeParseJSON(response.text, []);
-        // Map to products...
-        return raw.map((p: any) => ({
-            id: Math.random().toString(36).substr(2, 9),
-            name: p.name || "Project Item",
-            brand: p.brand || "Generic",
-            price: asMoney(p.price || "25.00"),
-            imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name || 'item')}/400/400`,
-            purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(p.name || 'item')}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_url_gen`,
-            retailer: "eBay",
-            sourceType: 'affiliate'
+        
+        // Enhance with live search in parallel
+        const enhancedProducts = await Promise.all(raw.map(async (p: any) => {
+            const searchQuery = `${p.brand || ''} ${p.name}`;
+            
+            // Priority 1: eBay live search
+            const liveEbay = await fetchEbayProduct(searchQuery);
+            if (liveEbay) return liveEbay;
+
+            // Priority 2: Alternative retailer search
+            const alternative = await fetchAlternativeProduct(searchQuery, p.retailer);
+            if (alternative) return alternative;
+
+            return {
+                id: Math.random().toString(36).substr(2, 9),
+                name: p.name || "Project Item",
+                brand: p.brand || "Generic",
+                price: asMoney(p.price || "25.00"),
+                imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name || 'item')}/400/400`,
+                purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(p.name || 'item')}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_url_gen`,
+                retailer: "eBay",
+                sourceType: 'affiliate'
+            };
         }));
+
+        return enhancedProducts;
     } catch (e) {
         console.error("AI URL Analysis Failed:", e);
         return generateProductsFromText(url.split('/').pop() || "Project", category);
@@ -260,15 +388,29 @@ export const generateComplementaryProducts = async (title: string, products: Pro
             }
         });
         const raw = safeParseJSON(response.text, []);
-        return raw.map((p: any) => ({
-            id: Math.random().toString(36).substr(2, 9),
-            name: p.name,
-            price: asMoney(p.estimatedPrice),
-            imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
-            purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(p.name)}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_comp_gen`,
-            retailer: p.retailer || "Amazon",
-            sourceType: 'affiliate'
+        
+        // Enhance with live search in parallel
+        const enhancedProducts = await Promise.all(raw.map(async (p: any) => {
+            // Priority 1: eBay live search
+            const liveEbay = await fetchEbayProduct(p.name);
+            if (liveEbay) return liveEbay;
+
+            // Priority 2: Alternative retailer search
+            const alternative = await fetchAlternativeProduct(p.name, p.retailer);
+            if (alternative) return alternative;
+
+            return {
+                id: Math.random().toString(36).substr(2, 9),
+                name: p.name,
+                price: asMoney(p.estimatedPrice),
+                imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
+                purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(p.name)}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_comp_gen`,
+                retailer: p.retailer || "eBay",
+                sourceType: 'affiliate'
+            };
         }));
+
+        return enhancedProducts;
     } catch (e) {
         console.error("AI Complementary Generation Failed:", e);
         return [];
@@ -384,6 +526,14 @@ export const searchSpecificProduct = async (query: string): Promise<Product | nu
         if (nativeResults && nativeResults.length > 0) {
             return nativeResults[0];
         }
+
+        // Priority 1: eBay live search
+        const liveEbay = await fetchEbayProduct(query);
+        if (liveEbay) return liveEbay;
+
+        // Priority 2: Alternative retailer search
+        const alternative = await fetchAlternativeProduct(query);
+        if (alternative) return alternative;
 
         // Fallback to AI search
         const response = await ai.models.generateContent({
