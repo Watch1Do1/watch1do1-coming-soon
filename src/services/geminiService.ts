@@ -2,7 +2,17 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Product, ProjectInsights, ProjectCategory, Money } from "../types";
 import { bigCommerceService } from "./bigCommerceService";
 
-export const PLATFORM_DEFAULT_CAMPID = import.meta.env.VITE_EBAY_CAMPAIGN_ID || "5339014523";
+const getEbayCampaignId = () => {
+    const viteId = import.meta.env.VITE_EBAY_CAMPAIGN_ID;
+    if (viteId && viteId !== "undefined" && viteId !== "null") return viteId;
+
+    const processId = (process.env as any).EBAY_CAMPAIGN_ID;
+    if (processId && processId !== "undefined" && processId !== "null") return processId;
+
+    return "5339014523"; // Global fallback
+};
+
+export const PLATFORM_DEFAULT_CAMPID = getEbayCampaignId();
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -24,9 +34,21 @@ const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
     ]);
 };
 
-const aiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+const getGeminiKey = () => {
+    // Priority 1: Vite-prefixed variable (for Vercel production)
+    const viteKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (viteKey && viteKey !== "undefined" && viteKey !== "null") return viteKey;
 
-if (!aiKey || aiKey === "undefined" || aiKey === "null") {
+    // Priority 2: Standard variable (for AI Studio preview)
+    const processKey = (process.env as any).GEMINI_API_KEY;
+    if (processKey && processKey !== "undefined" && processKey !== "null") return processKey;
+
+    return "";
+};
+
+const aiKey = getGeminiKey();
+
+if (!aiKey) {
     console.error("CRITICAL: VITE_GEMINI_API_KEY is missing or invalid in the browser environment. Please check your Vercel Environment Variables.");
 } else {
     console.log("GEMINI_API_KEY is present (length: " + aiKey.length + ", starts with: " + aiKey.substring(0, 4) + "...)");
