@@ -9,7 +9,7 @@ export default function handler(req: any, res: any) {
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['host'];
     const currentUrl = `${protocol}://${host}/api/ebay/account-deletion`;
-    const endpoint = (process.env.EBAY_DELETION_ENDPOINT || currentUrl).trim();
+    const endpoint = (process.env.EBAY_DELETION_ENDPOINT || currentUrl).trim().replace(/"/g, '');
 
     console.log("--- eBay Account Deletion Validation ---");
     console.log("Time:", new Date().toISOString());

@@ -35,7 +35,8 @@ import {
     generateProductsFromImages, 
     generateComplementaryProducts, 
     generateProductsFromUrl,
-    generateV3ProjectInsights
+    generateV3ProjectInsights,
+    PLATFORM_DEFAULT_CAMPID
 } from './services/geminiService';
 import { dbService } from './services/dbService';
 import { stripeService } from './services/stripeService';
@@ -524,7 +525,7 @@ const App: React.FC = () => {
     } else if (affiliateItems.length > 0) {
         setIsLoading(true); startRotatingLoadingMessages("Syncing Partner Payload...");
         setTimeout(() => {
-            const campId = selectedVideo?.epnCampId || '5339014523';
+            const campId = selectedVideo?.epnCampId || PLATFORM_DEFAULT_CAMPID;
             const firstItemName = affiliateItems[0].name;
             const handoffUrl = `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent(firstItemName)}&mkrid=711-53200-19255-0&siteid=0&campid=${campId}&toolid=10001&customid=w1d1_hub_sync`;
             

@@ -4,8 +4,13 @@ export default function handler(req: any, res: any) {
     status: "ok", 
     time: new Date().toISOString(),
     env: {
-      hasToken: !!process.env.EBAY_DELETION_VERIFICATION_TOKEN,
-      hasEndpoint: !!process.env.EBAY_DELETION_ENDPOINT
+      hasEbayClientId: !!process.env.EBAY_CLIENT_ID,
+      hasEbayClientSecret: !!process.env.EBAY_CLIENT_SECRET,
+      hasEbayCampaignId: !!process.env.EBAY_CAMPAIGN_ID,
+      hasGeminiKey: !!process.env.GEMINI_API_KEY,
+      hasResendKey: !!process.env.RESEND_API_KEY,
+      hasDeletionToken: !!process.env.EBAY_DELETION_VERIFICATION_TOKEN,
+      hasDeletionEndpoint: !!process.env.EBAY_DELETION_ENDPOINT
     }
   });
 }

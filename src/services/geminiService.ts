@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { Product, ProjectInsights, ProjectCategory, Money } from "../types";
 import { bigCommerceService } from "./bigCommerceService";
 
-export const PLATFORM_DEFAULT_CAMPID = "5339014523";
+export const PLATFORM_DEFAULT_CAMPID = import.meta.env.VITE_EBAY_CAMPAIGN_ID || "5339014523";
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -24,10 +24,10 @@ const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
     ]);
 };
 
-const aiKey = process.env.GEMINI_API_KEY || "";
+const aiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
 
 if (!aiKey || aiKey === "undefined" || aiKey === "null") {
-    console.error("CRITICAL: GEMINI_API_KEY is missing or invalid in the browser environment. Please check your AI Studio Secrets.");
+    console.error("CRITICAL: VITE_GEMINI_API_KEY is missing or invalid in the browser environment. Please check your Vercel Environment Variables.");
 } else {
     console.log("GEMINI_API_KEY is present (length: " + aiKey.length + ", starts with: " + aiKey.substring(0, 4) + "...)");
 }
