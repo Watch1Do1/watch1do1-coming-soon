@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Video, Product, ProjectInsights, User } from '../types';
 import { ebayService, EbayItem } from '../services/ebayService';
-import { generateDeepDiveProducts } from '../services/geminiService';
+import { generateDeepDiveProducts, searchSpecificProduct } from '../services/geminiService';
 import { 
     SparkleIcon, 
     PlayIcon, 
@@ -37,6 +37,8 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
     const [deepDiveProducts, setDeepDiveProducts] = useState<Product[]>([]);
     const [isDeepDiving, setIsDeepDiving] = useState(false);
     const [hasDeepDived, setHasDeepDived] = useState(false);
+    const [manualSearchQuery, setManualSearchQuery] = useState('');
+    const [isManualSearching, setIsManualSearching] = useState(false);
 
     const insights = video.insights;
     const products = video.products || [];
@@ -93,6 +95,26 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
             console.error("Deep Dive Error:", e);
         } finally {
             setIsDeepDiving(false);
+        }
+    };
+
+    const handleManualSearch = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!manualSearchQuery.trim() || isManualSearching) return;
+        
+        setIsManualSearching(true);
+        try {
+            const result = await searchSpecificProduct(manualSearchQuery);
+            if (result) {
+                setDeepDiveProducts(prev => [result, ...prev]);
+                setManualSearchQuery('');
+            } else {
+                alert("Could not find a specific match for that item. Try a broader search.");
+            }
+        } catch (e) {
+            console.error("Manual Search Error:", e);
+        } finally {
+            setIsManualSearching(false);
         }
     };
 
@@ -353,6 +375,28 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
 
                                 {activeTab === 'products' && (
                                     <div className="space-y-4 animate-fade-in">
+                                        {/* Manual Search Bar */}
+                                        <form onSubmit={handleManualSearch} className="relative group mb-6">
+                                            <input 
+                                                type="text" 
+                                                value={manualSearchQuery}
+                                                onChange={(e) => setManualSearchQuery(e.target.value)}
+                                                placeholder="Search for a specific item..." 
+                                                className="w-full py-3 pl-4 pr-12 bg-slate-800/50 border border-slate-700 rounded-2xl text-xs focus:ring-2 focus:ring-[#7D8FED]/20 focus:border-[#7D8FED] outline-none transition-all placeholder:text-slate-500"
+                                            />
+                                            <button 
+                                                type="submit" 
+                                                disabled={isManualSearching}
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-slate-400 hover:text-[#7D8FED] disabled:opacity-50"
+                                            >
+                                                {isManualSearching ? (
+                                                    <RefreshCwIcon className="w-4 h-4 animate-spin" />
+                                                ) : (
+                                                    <SearchIcon className="w-4 h-4" />
+                                                )}
+                                            </button>
+                                        </form>
+
                                         {displayProducts.length > 0 ? displayProducts.map((product, i) => (
                                             <a 
                                                 key={i} 
