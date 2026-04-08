@@ -524,6 +524,79 @@ export const generateV3ProjectInsights = async (title: string, products: Product
 };
 
 /**
+ * V3: Deep Dive Product Analysis
+ * Finds advanced, specialized, or missed products for a project.
+ */
+export const generateDeepDiveProducts = async (videoTitle: string, existingProducts: Product[], category: ProjectCategory): Promise<Product[]> => {
+    const existingNames = existingProducts.map(p => p.name).join(", ");
+    const prompt = `The user is working on the project: "${videoTitle}" in category "${category}".
+    We have already identified these basic items: [${existingNames}].
+    
+    Perform a "Deep Dive" to identify 3-5 ADVANCED, SPECIALIZED, or PROFESSIONAL-LEVEL tools or materials that would make this project easier, safer, or higher quality. 
+    Think about things a beginner might miss (e.g., specific chemical sprays, specialized measuring tools, professional-grade fasteners).
+    
+    Return as a JSON array of objects with: name, brand, estimatedPrice (string), retailer (Amazon/Home Depot/eBay/Guitar Center), sourceType ('affiliate'), matchType ('alternative').`;
+
+    try {
+        const response = await withTimeout(ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                maxOutputTokens: 2048,
+                responseSchema: {
+                    type: Type.ARRAY,
+                    items: {
+                        type: Type.OBJECT,
+                        properties: {
+                            name: { type: Type.STRING },
+                            brand: { type: Type.STRING },
+                            estimatedPrice: { type: Type.STRING },
+                            retailer: { type: Type.STRING },
+                            sourceType: { type: Type.STRING },
+                            matchType: { type: Type.STRING }
+                        },
+                        required: ["name", "estimatedPrice", "retailer"]
+                    }
+                }
+            }
+        }), 40000);
+
+        const raw = safeParseJSON(response.text, []);
+        
+        const enhancedProducts = await Promise.all(raw.map(async (p: any) => {
+            const searchQuery = `${p.brand || ''} ${p.name}`;
+            
+            // Priority 1: eBay live search
+            const liveEbay = await fetchEbayProduct(searchQuery);
+            if (liveEbay) return liveEbay;
+
+            // Priority 2: Alternative retailer search
+            const alternative = await fetchAlternativeProduct(searchQuery, p.retailer);
+            if (alternative) return alternative;
+
+            return {
+                id: Math.random().toString(36).substr(2, 9),
+                name: p.name,
+                brand: p.brand || "Pro Choice",
+                price: asMoney(p.estimatedPrice),
+                imageUrl: `https://picsum.photos/seed/${encodeURIComponent(p.name)}/400/400`,
+                purchaseUrl: `https://www.ebay.com/sch/i.html?_nkw=${encodeURIComponent((p.brand || '') + ' ' + p.name)}&mkrid=711-53200-19255-0&siteid=0&campid=${PLATFORM_DEFAULT_CAMPID}&toolid=10001&customid=w1d1_deep_dive`,
+                retailer: p.retailer || "eBay",
+                sourceType: 'affiliate',
+                confidence: 0.8,
+                matchType: 'alternative'
+            };
+        }));
+
+        return enhancedProducts;
+    } catch (e) {
+        console.error("Deep Dive Analysis Failed:", e);
+        return [];
+    }
+};
+
+/**
  * V3: Project Assistant Chat
  */
 export const createProjectAssistantChat = (videoTitle: string, category: string) => {

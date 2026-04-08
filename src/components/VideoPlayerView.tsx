@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Video, Product, ProjectInsights, User } from '../types';
 import { ebayService, EbayItem } from '../services/ebayService';
+import { generateDeepDiveProducts } from '../services/geminiService';
 import { 
     SparkleIcon, 
     PlayIcon, 
@@ -12,7 +13,8 @@ import {
     PlusIcon,
     ChevronDownIcon,
     LightBulbIcon,
-    PrinterIcon
+    PrinterIcon,
+    SearchIcon
 } from './IconComponents';
 
 interface VideoPlayerViewProps {
@@ -32,6 +34,9 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
     const [isInsightsExpanded, setIsInsightsExpanded] = useState(true);
     const [ebayProducts, setEbayProducts] = useState<Product[]>([]);
     const [isSearchingEbay, setIsSearchingEbay] = useState(false);
+    const [deepDiveProducts, setDeepDiveProducts] = useState<Product[]>([]);
+    const [isDeepDiving, setIsDeepDiving] = useState(false);
+    const [hasDeepDived, setHasDeepDived] = useState(false);
 
     const insights = video.insights;
     const products = video.products || [];
@@ -75,7 +80,21 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
         fetchEbayProducts();
     }, [activeTab, insights, ebayProducts.length]);
 
-    const displayProducts = [...products, ...ebayProducts];
+    const displayProducts = [...products, ...ebayProducts, ...deepDiveProducts];
+
+    const handleDeepDive = async () => {
+        if (isDeepDiving || hasDeepDived) return;
+        setIsDeepDiving(true);
+        try {
+            const results = await generateDeepDiveProducts(video.title, displayProducts, video.category);
+            setDeepDiveProducts(results);
+            setHasDeepDived(true);
+        } catch (e) {
+            console.error("Deep Dive Error:", e);
+        } finally {
+            setIsDeepDiving(false);
+        }
+    };
 
     const handlePrint = () => {
         const originalTitle = document.title;
@@ -372,6 +391,31 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
                                             <div className="flex items-center justify-center gap-2 py-4">
                                                 <RefreshCwIcon className="w-4 h-4 text-[#7D8FED] animate-spin" />
                                                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Syncing more eBay results...</span>
+                                            </div>
+                                        )}
+
+                                        {!isDeepDiving && !hasDeepDived && displayProducts.length > 0 && (
+                                            <button 
+                                                onClick={handleDeepDive}
+                                                className="w-full mt-6 p-6 bg-slate-900/50 border-2 border-dashed border-slate-700 rounded-[2rem] hover:border-[#7D8FED]/50 hover:bg-slate-800 transition-all group flex flex-col items-center gap-3"
+                                            >
+                                                <div className="w-12 h-12 bg-[#7D8FED]/10 rounded-full flex items-center justify-center text-[#7D8FED] group-hover:scale-110 transition-transform">
+                                                    <SearchIcon className="w-6 h-6" />
+                                                </div>
+                                                <div className="text-center">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-white">Missing something?</p>
+                                                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Perform a Deep Dive for advanced tools & materials</p>
+                                                </div>
+                                            </button>
+                                        )}
+
+                                        {isDeepDiving && (
+                                            <div className="w-full mt-6 p-8 bg-slate-900/50 border-2 border-dashed border-[#7D8FED]/30 rounded-[2rem] flex flex-col items-center gap-4 animate-pulse">
+                                                <RefreshCwIcon className="w-8 h-8 text-[#7D8FED] animate-spin" />
+                                                <div className="text-center">
+                                                    <p className="text-[10px] font-black uppercase tracking-widest text-[#7D8FED]">Deep Diving...</p>
+                                                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">Analyzing project for specialized professional gear</p>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
