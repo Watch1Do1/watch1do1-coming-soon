@@ -1,6 +1,6 @@
 {
-  "name": "Watch1Do1 | AI-Powered Maker Hub",
-  "description": "The visual logic for makers. Watch1Do1 uses AI to instantly extract tool lists, material kits, and safety protocols from any project video. Coming soon.",
+  "name": "Watch1Do1 | Know What It Really Takes",
+  "description": "Watch1Do1 turns tutorials, videos, and images into clear, build‑ready plans — with real materials, real costs, and real-world availability.",
   "requestFramePermissions": [
     "camera"
   ]

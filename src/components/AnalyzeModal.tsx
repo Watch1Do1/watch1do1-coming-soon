@@ -113,8 +113,8 @@ const AnalyzeModal: React.FC<AnalyzeModalProps> = ({
               <img src={APP_LOGO_PATH} alt="Logo" className="w-6 h-6 object-contain" referrerPolicy="no-referrer" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-white tracking-tight">AI Project Analyzer</h2>
-              <p className="text-xs text-slate-400 font-medium uppercase tracking-widest">Vision-Powered Insights</p>
+              <h2 className="text-xl font-black text-white tracking-tight">Vision Scanner</h2>
+              <p className="text-xs text-slate-400 font-medium uppercase tracking-widest">Project Insight Engine</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 text-slate-400 hover:text-white transition-colors">
@@ -157,8 +157,8 @@ const AnalyzeModal: React.FC<AnalyzeModalProps> = ({
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-white">Operational Briefing</h4>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Our AI analyzes visual and textual data to extract technical specifications, safety protocols, and required materials. 
-                    Select your input method and project category to begin the deep-scan.
+                    The Vision Scanner identifies technical specifications, safety protocols, and required materials from your project inputs. 
+                    Select your input method and project category to begin.
                   </p>
                 </div>
               </div>
@@ -238,7 +238,7 @@ const AnalyzeModal: React.FC<AnalyzeModalProps> = ({
                       </div>
                       <div className="text-center">
                         <p className="text-sm font-bold text-white">Drop project photos here</p>
-                        <p className="text-xs text-slate-500 mt-1">AI will identify tools & materials</p>
+                        <p className="text-xs text-slate-500 mt-1">Identify tools & materials instantly</p>
                       </div>
                     </>
                   )}
@@ -285,7 +285,7 @@ const AnalyzeModal: React.FC<AnalyzeModalProps> = ({
                     </div>
                     <div className="flex-grow">
                       <p className="text-xs font-bold text-white">Frame Captured</p>
-                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">Ready for analysis</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-wider">Ready for review</p>
                     </div>
                     <button onClick={() => setFiles([])} className="text-slate-500 hover:text-white">
                       <RefreshCwIcon className="w-4 h-4" />
@@ -327,7 +327,7 @@ const AnalyzeModal: React.FC<AnalyzeModalProps> = ({
                 className="mt-1 w-4 h-4 rounded border-slate-700 bg-slate-800 text-[#7D8FED] focus:ring-[#7D8FED]"
               />
               <label htmlFor="affirmation" className="text-[10px] text-slate-400 leading-relaxed uppercase tracking-wider font-medium">
-                I affirm that I have the legal right to analyze this content and that my use complies with the platform's terms of service and ethical AI guidelines.
+                I affirm that I have the legal right to use this content and that my use complies with the platform's terms of service and project safety guidelines.
               </label>
             </div>
           </div>
@@ -337,7 +337,7 @@ const AnalyzeModal: React.FC<AnalyzeModalProps> = ({
         <div className="p-6 border-t border-slate-800 bg-slate-900/50 flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div className="flex items-center gap-2 text-slate-500">
             <ShieldIcon className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">End-to-End Encrypted Analysis</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest">Secure Project Extraction</span>
           </div>
           
           <button
@@ -357,7 +357,7 @@ const AnalyzeModal: React.FC<AnalyzeModalProps> = ({
             ) : (
               <>
                 <ScanFrameIcon className="w-4 h-4" />
-                <span>Initiate Deep Scan</span>
+                <span>See What It Takes</span>
               </>
             )}
           </button>

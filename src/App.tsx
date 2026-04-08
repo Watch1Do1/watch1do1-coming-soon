@@ -56,12 +56,12 @@ declare global {
 }
 
 const LOADING_MESSAGES = [
-    "Scanning transcript for mentioned tools...",
-    "Spotting materials in the frames...",
-    "Searching merchant inventory...",
-    "Performing V3 Cost Estimation...",
-    "Running Halsted Safety Sweep...",
-    "Building your custom project studio..."
+    "Identifying project requirements...",
+    "Finding specific tools and materials...",
+    "Verifying real-world availability...",
+    "Calculating cost estimates...",
+    "Reviewing safety protocols...",
+    "Building your project studio..."
 ];
 
 const CATEGORIES: ProjectCategory[] = [

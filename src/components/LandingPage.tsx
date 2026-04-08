@@ -73,16 +73,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                 </div>
 
                 <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter mb-8 leading-[0.9]">
-                    THE VISUAL LOGIC <br />
-                    <span className="text-[#7D8FED]">FOR MAKERS.</span>
+                    KNOW WHAT IT <br />
+                    <span className="text-[#7D8FED]">REALLY TAKES.</span>
                 </h1>
 
                 <p className="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl mx-auto mb-6 leading-relaxed">
-                    Watch1Do1 uses AI to instantly extract tool lists, material kits, and safety protocols from any project video. Stop searching, start building.
+                    Watch1Do1 turns tutorials, videos, and images into clear, build‑ready plans — with real materials, real costs, and real-world availability.
                 </p>
 
                 <p className="text-sm md:text-base text-[#7D8FED] font-bold max-w-2xl mx-auto mb-12 uppercase tracking-wider">
-                    We analyze tutorials, videos, and images to identify the exact tools and products needed to complete a project.
+                    Know what it really takes — before you start.
                 </p>
 
                 <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-12">
@@ -92,13 +92,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                     >
                         <div className="flex items-center gap-3">
                             <CameraIcon className="w-5 h-5" />
-                            Try AI Vision Beta
+                            Try the Vision Scanner
                         </div>
                     </button>
 
                     <div className="relative group">
                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-max opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                            <span className="text-[9px] font-black uppercase tracking-widest text-[#7D8FED] bg-[#7D8FED]/10 px-2 py-1 rounded border border-[#7D8FED]/20">Try a sample project</span>
+                            <span className="text-[9px] font-black uppercase tracking-widest text-[#7D8FED] bg-[#7D8FED]/10 px-2 py-1 rounded border border-[#7D8FED]/20">See what it really takes</span>
                         </div>
                         <button 
                             onClick={onSampleClick}
@@ -158,6 +158,122 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                     </div>
                 </div>
 
+                {/* How it Works Section */}
+                <div className="mb-32 text-center">
+                    <h2 className="text-4xl font-black text-white tracking-tighter uppercase mb-16">How Watch1Do1 Works</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        <div className="space-y-4">
+                            <div className="w-12 h-12 bg-[#7D8FED]/10 rounded-full flex items-center justify-center mx-auto text-[#7D8FED] font-black">1</div>
+                            <h3 className="text-xl font-black text-white uppercase tracking-tight">Start with what you already have</h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">Paste a video link, upload a photo, or share a tutorial.</p>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="w-12 h-12 bg-[#7D8FED]/10 rounded-full flex items-center justify-center mx-auto text-[#7D8FED] font-black">2</div>
+                            <h3 className="text-xl font-black text-white uppercase tracking-tight">See the real requirements</h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">We identify the specific tools, materials, estimated cost, and safety considerations — not just generic suggestions.</p>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="w-12 h-12 bg-[#7D8FED]/10 rounded-full flex items-center justify-center mx-auto text-[#7D8FED] font-black">3</div>
+                            <h3 className="text-xl font-black text-white uppercase tracking-tight">Build with confidence</h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">Know what’s required before you buy anything, and source parts from real marketplaces when you’re ready.</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Emotional Hook Section */}
+                <div className="mb-32 bg-slate-900/50 border border-slate-800 rounded-[3rem] p-12 text-center relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#7D8FED]/50 to-transparent"></div>
+                    <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-8">If You’ve Ever Started a Project That…</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto mb-10">
+                        {[
+                            "…looked simple, until halfway through",
+                            "…cost more than expected",
+                            "…required one missing tool",
+                            "…stalled because you weren’t quite sure"
+                        ].map((text, i) => (
+                            <div key={i} className="flex items-center gap-3 text-left bg-slate-950/50 p-4 rounded-2xl border border-slate-800/50">
+                                <div className="w-2 h-2 rounded-full bg-rose-500"></div>
+                                <span className="text-slate-300 text-sm font-medium">{text}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <p className="text-xl font-black text-[#7D8FED] uppercase tracking-tighter">Watch1Do1 exists to eliminate those moments.</p>
+                </div>
+
+                {/* Grounded in the Real World Section */}
+                <div className="mb-32 flex flex-col md:flex-row items-center gap-12 text-left">
+                    <div className="flex-1">
+                        <h2 className="text-4xl font-black text-white tracking-tighter uppercase mb-6">Grounded in the Real World</h2>
+                        <p className="text-slate-400 text-lg leading-relaxed mb-8">
+                            We don’t guess what’s needed — we verify what’s available. Watch1Do1 connects projects to real‑world marketplaces, so parts aren’t just theoretical — they’re findable.
+                        </p>
+                        <div className="flex items-center gap-4">
+                            <div className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Live Inventory Sync</span>
+                            </div>
+                            <div className="px-4 py-2 bg-slate-900 border border-slate-800 rounded-xl flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-[#7D8FED]"></div>
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Marketplace Verified</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full bg-slate-950 rounded-[2.5rem] border border-slate-800 p-8 relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#7D8FED]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="space-y-4 relative z-10">
+                            <div className="h-4 w-1/3 bg-slate-800 rounded-full"></div>
+                            <div className="h-24 bg-slate-900 rounded-2xl border border-slate-800 flex items-center justify-center">
+                                <span className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em]">Marketplace Infrastructure</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="h-12 bg-slate-900 rounded-xl border border-slate-800"></div>
+                                <div className="h-12 bg-slate-900 rounded-xl border border-slate-800"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Testimonial Section */}
+                <div className="mb-32 text-center italic">
+                    <p className="text-2xl text-slate-300 font-medium max-w-2xl mx-auto mb-4">
+                        “I would have started this project completely differently if I’d known this upfront.”
+                    </p>
+                    <p className="text-[#7D8FED] font-black uppercase tracking-widest text-sm">— Early tester</p>
+                </div>
+
+                {/* Early Access Section */}
+                <div className="mb-32 text-center">
+                    <h2 className="text-4xl font-black text-white tracking-tighter uppercase mb-6">The Project Studio Is Coming</h2>
+                    <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-12">
+                        The Vision Scanner is your first look. The full Watch1Do1 Project Studio adds curated build kits, cost and safety insights, completion tracking, and builder feedback.
+                    </p>
+                    
+                    <form onSubmit={(e) => handleWaitlistSubmit(e)} className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md mx-auto">
+                        <div className="relative w-full">
+                            <input 
+                                type="email" 
+                                required
+                                placeholder="Enter your email" 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full py-5 px-8 bg-slate-800/50 border border-slate-700 rounded-full text-white outline-none focus:border-[#7D8FED] transition-all placeholder:text-slate-500"
+                            />
+                            {status === 'success' && (
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500 flex items-center gap-2">
+                                    <CheckCircleIcon className="w-5 h-5" />
+                                </div>
+                            )}
+                        </div>
+                        <button 
+                            type="submit" 
+                            disabled={status === 'loading' || status === 'success'}
+                            className="w-full sm:w-auto px-8 py-5 bg-[#7D8FED] text-white rounded-full font-black uppercase text-[10px] tracking-widest hover:bg-[#6b7ae6] transition-all disabled:opacity-50 whitespace-nowrap"
+                        >
+                            {status === 'loading' ? 'Requesting...' : status === 'success' ? 'Requested!' : 'Request Early Access'}
+                        </button>
+                    </form>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-20">
                     <button 
                         onClick={() => handleBoxClick('doers')}
@@ -202,16 +318,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                                         <span className="text-[9px] font-black uppercase tracking-widest text-[#7D8FED]">Maker Experience</span>
                                     </div>
                                     <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6 leading-tight">
-                                        BUILD FASTER WITH <br /><span className="text-[#7D8FED]">AI VISION.</span>
+                                        BUILD FASTER WITH <br /><span className="text-[#7D8FED]">VISION LOGIC.</span>
                                     </h2>
                                     <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-xl">
-                                        Our AI Vision engine scans any project video to extract the "Logic" behind the build. No more pausing and squinting at screen captures.
+                                        Our Vision engine scans any project video to extract the "Logic" behind the build. No more pausing and squinting at screen captures.
                                     </p>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
                                         <div className="flex items-start gap-3">
                                             <ScanFrameIcon className="w-5 h-5 text-[#7D8FED] mt-1" />
                                             <div>
-                                                <h4 className="text-white font-bold text-sm">Instant Extraction</h4>
+                                                <h4 className="text-white font-bold text-sm">Instant Ready-Plans</h4>
                                                 <p className="text-slate-500 text-xs">Get full tool lists and material kits in seconds.</p>
                                             </div>
                                         </div>
@@ -227,7 +343,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                                         onClick={onAnalyzeClick}
                                         className="px-8 py-4 bg-white text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-white/10"
                                     >
-                                        Try AI Vision Beta
+                                        Try the Vision Scanner
                                     </button>
                                 </div>
                                 <div className="flex-1 bg-slate-950 rounded-2xl border border-slate-800 p-8 flex items-center justify-center">
@@ -307,10 +423,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                                         <span className="text-[9px] font-black uppercase tracking-widest text-amber-400">Partner Ecosystem</span>
                                     </div>
                                     <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6 leading-tight">
-                                        IN-HOUSE <span className="text-amber-500">COMMERCE</span> <br /> ENGINE.
+                                        IN-HOUSE <span className="text-amber-500">COMMERCE</span> <br /> INFRASTRUCTURE.
                                     </h2>
                                     <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-xl">
-                                        Keep customers in-house with native checkout. Our AI Vision engine learns your catalog to recommend products at the perfect moment of discovery.
+                                        Keep customers in-house with native checkout. Our Vision engine learns your catalog to recommend products at the perfect moment of discovery.
                                     </p>
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
@@ -324,7 +440,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                                         <div className="flex items-start gap-3">
                                             <ScanFrameIcon className="w-5 h-5 text-amber-500 mt-1" />
                                             <div>
-                                                <h4 className="text-white font-bold text-sm">AI Catalog Sync</h4>
+                                                <h4 className="text-white font-bold text-sm">Catalog Sync</h4>
                                                 <p className="text-slate-500 text-xs">Your products automatically tagged in any video.</p>
                                             </div>
                                         </div>
@@ -374,6 +490,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                             </div>
                         </div>
                     )}
+                </div>
+
+                <div className="mt-20 pt-12 border-t border-slate-800 text-center">
+                    <p className="text-slate-500 text-sm font-medium italic mb-8">
+                        Most problems don’t happen during the build. <br />
+                        They happen before you ever start.
+                    </p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">
+                        © {new Date().getFullYear()} Watch1Do1. All rights reserved.
+                    </p>
                 </div>
             </div>
         </div>
