@@ -303,7 +303,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                             <ShieldIcon className="w-6 h-6 text-amber-500" />
                         </div>
                         <h3 className="text-xl font-black text-white mb-3 uppercase tracking-tighter">For Partners</h3>
-                        <p className="text-slate-400 text-sm leading-relaxed">Integrate your products directly into our AI-powered searches. Reach makers at the exact moment they need your tools or materials.</p>
+                        <p className="text-slate-400 text-sm leading-relaxed">Connect your products to real projects at the moment builders are planning—not after they’ve made up their minds.</p>
                     </button>
                 </div>
 
@@ -422,40 +422,68 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAnalyzeClick, onSampleClick
                                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full mb-6">
                                         <span className="text-[9px] font-black uppercase tracking-widest text-amber-400">Partner Ecosystem</span>
                                     </div>
-                                    <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6 leading-tight">
-                                        IN-HOUSE <span className="text-amber-500">COMMERCE</span> <br /> INFRASTRUCTURE.
+                                    <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-6 leading-tight uppercase">
+                                        EXECUTION INTELLIGENCE FOR <br /><span className="text-amber-500">REAL‑WORLD BUILDS.</span>
                                     </h2>
                                     <p className="text-slate-400 text-lg mb-8 leading-relaxed max-w-xl">
-                                        Keep customers in-house with native checkout. Our Vision engine learns your catalog to recommend products at the perfect moment of discovery.
+                                        Watch1Do1 connects your products to real projects at the moment builders are planning—not after they’ve made up their minds.
+                                    </p>
+                                    <p className="text-slate-500 text-sm mb-8 leading-relaxed max-w-xl">
+                                        Our platform transforms instructional content into execution‑ready Planning Kits, showing exactly how and when your products are used in real builds. We surface demand before the final decision, so customers arrive informed, prepared, and confident.
                                     </p>
                                     
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                                        <div className="flex items-start gap-3">
-                                            <BarChartIcon className="w-5 h-5 text-amber-500 mt-1" />
-                                            <div>
-                                                <h4 className="text-white font-bold text-sm">Performance Console</h4>
-                                                <p className="text-slate-500 text-xs">Track SKU performance across the entire system.</p>
-                                            </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+                                        <div className="space-y-2">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-tight">Project‑Embedded Discovery</h4>
+                                            <p className="text-slate-500 text-[10px] leading-relaxed">Your products appear directly inside build workflows—where intent is highest and decisions are made.</p>
                                         </div>
-                                        <div className="flex items-start gap-3">
-                                            <ScanFrameIcon className="w-5 h-5 text-amber-500 mt-1" />
-                                            <div>
-                                                <h4 className="text-white font-bold text-sm">Catalog Sync</h4>
-                                                <p className="text-slate-500 text-xs">Your products automatically tagged in any video.</p>
-                                            </div>
+                                        <div className="space-y-2">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-tight">Planning‑Stage Signals</h4>
+                                            <p className="text-slate-500 text-[10px] leading-relaxed">See how builders move from viewing a project to preparing a complete kit, including which items are essential, optional, or substituted.</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-tight">Availability Awareness</h4>
+                                            <p className="text-slate-500 text-[10px] leading-relaxed">We analyze live market data to ensure recommended products are practical, obtainable, and correctly positioned.</p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-tight">Execution Friction Insights</h4>
+                                            <p className="text-slate-500 text-[10px] leading-relaxed">Understand where purchase fragmentation causes drop‑off—and where unified execution could unlock higher conversion.</p>
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col sm:flex-row gap-4">
-                                        <button 
-                                            onClick={() => onNavigate('contact')}
-                                            className="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-amber-500/20"
-                                        >
-                                            Partner Inquiry
-                                        </button>
-                                        <div className="flex items-center gap-2 px-4 py-2 bg-slate-950 border border-slate-800 rounded-xl">
-                                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Multi-Brand Checkout Enabled</span>
+                                    <div className="space-y-6">
+                                        <div className="p-6 bg-slate-950/50 border border-slate-800 rounded-2xl">
+                                            <h4 className="text-white font-black text-xs uppercase tracking-widest mb-4">Partner Demand Console</h4>
+                                            <div className="grid grid-cols-2 gap-4 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-1 h-1 rounded-full bg-amber-500"></div>
+                                                    Project Usage Tracking
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-1 h-1 rounded-full bg-amber-500"></div>
+                                                    Kit Inclusion Data
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-1 h-1 rounded-full bg-amber-500"></div>
+                                                    Product Pairings
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-1 h-1 rounded-full bg-amber-500"></div>
+                                                    Market Behavior
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <p className="text-slate-400 text-xs font-medium">
+                                                Interested in publishing authoritative build kits or understanding how your products are used in real projects?
+                                            </p>
+                                            <button 
+                                                onClick={() => onNavigate('contact')}
+                                                className="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-xl shadow-amber-500/20"
+                                            >
+                                                Apply to Partner Ecosystem
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
