@@ -23,11 +23,12 @@ interface VideoPlayerViewProps {
     onAddToCart: (product: Product) => void;
     onTipClick: () => void;
     onShare: () => void;
+    onSupportClick: () => void;
     currentUser: User | null;
 }
 
 const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({ 
-    video, onBack, onAddToCart, onTipClick, onShare, currentUser 
+    video, onBack, onAddToCart, onTipClick, onShare, onSupportClick, currentUser 
 }) => {
     console.log("VideoPlayerView rendering with insights:", video.insights);
     const [activeTab, setActiveTab] = useState<'insights' | 'products' | 'safety'>('insights');
@@ -462,6 +463,18 @@ const VideoPlayerView: React.FC<VideoPlayerViewProps> = ({
                                                 </div>
                                             </div>
                                         )}
+
+                                        <div className="mt-12 pt-8 border-t border-slate-800 text-center">
+                                            <p className="text-[10px] text-slate-500 font-medium leading-relaxed mb-4 italic">
+                                                If this helped you prepare, optional support helps us <br /> improve the AI during beta.
+                                            </p>
+                                            <button 
+                                                onClick={onSupportClick}
+                                                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-full text-[10px] font-black uppercase tracking-widest transition-all"
+                                            >
+                                                Support the Project
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 

@@ -10,6 +10,7 @@ import VideoCard from './components/VideoCard';
 import AnalyzeModal from './components/AnalyzeModal';
 import VideoPlayerView from './components/VideoPlayerView';
 import LandingPage from './components/LandingPage';
+import SupportModal from './components/SupportModal';
 import { 
     UploadModal, 
     DirectTipModal, 
@@ -157,6 +158,7 @@ const App: React.FC = () => {
   const [sdkCheckoutId, setSdkCheckoutId] = useState<string | null>(null);
   const [affiliateSyncUrl, setAffiliateSyncUrl] = useState<string | null>(null);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isSupportModalOpen, setSupportModalOpen] = useState(false);
   const [pendingAnalysis, setPendingAnalysis] = useState<{ type: UploadType, val: File[] | string, cat: ProjectCategory } | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   
@@ -179,6 +181,7 @@ const App: React.FC = () => {
     setSelectedCategory('All');
     setSelectedVideo(null);
     setProfileInitialTab('overview');
+    setSupportModalOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -574,6 +577,7 @@ const App: React.FC = () => {
             onTipClick={() => setTipModalOpen(true)} 
             onAddToCart={handleAddToCart} 
             onShare={() => handleTriggerShare(selectedVideo, selectedVideo.creatorId === currentUser?.email)} 
+            onSupportClick={() => setSupportModalOpen(true)}
             currentUser={currentUser} 
         />
     );
@@ -698,8 +702,20 @@ const App: React.FC = () => {
         </div>
         <main className="flex-grow pt-20">{renderContent()}</main>
         <div className="no-print">
-            <Footer onNavigate={(v) => { setView(v); window.scrollTo(0, 0); }} />
+            <Footer onNavigate={(v) => { 
+                if (v === 'support') setSupportModalOpen(true);
+                else { setView(v); window.scrollTo(0, 0); }
+            }} />
         </div>
+
+        {isSupportModalOpen && (
+            <div className="no-print">
+                <SupportModal 
+                    onClose={() => setSupportModalOpen(false)} 
+                    stripeLink="https://buy.stripe.com/fZufZj1l42mg3hy6U7eQM00" 
+                />
+            </div>
+        )}
 
         {/* Mobile Floating Action Buttons */}
         <div className="sm:hidden fixed bottom-24 right-6 z-[150] flex flex-col gap-4 no-print">
