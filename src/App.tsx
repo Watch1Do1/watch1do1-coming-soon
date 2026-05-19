@@ -175,6 +175,42 @@ const App: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    let title = "Watch1Do1 | Know What It Really Takes";
+    let description = "Watch1Do1 turns tutorials, videos, and images into clear, build‑ready plans — with real materials, real costs, and real-world availability.";
+
+    if (view === 'videoPlayer' && selectedVideo) {
+      title = `${selectedVideo.title} | Watch1Do1 Project Kit`;
+      description = `Learn what it takes to build ${selectedVideo.title}. Real materials, costs, and availability included in this Watch1Do1 project kit.`;
+    } else if (view === 'profile') {
+      title = `My Maker Profile | Watch1Do1`;
+    } else if (view === 'admin') {
+      title = `Admin Dashboard | Watch1Do1`;
+    } else if (view === 'about') {
+      title = `About Watch1Do1 | Our Mission`;
+    } else if (view === 'contact') {
+      title = `Contact Us | Watch1Do1 Support`;
+    } else if (view === 'terms') {
+      title = `Terms of Service | Watch1Do1`;
+    } else if (view === 'privacy') {
+      title = `Privacy Policy | Watch1Do1`;
+    } else if (view === 'disclosure') {
+      title = `Affiliate Disclosure | Watch1Do1`;
+    }
+
+    document.title = title;
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', description);
+    }
+    
+    // Update Open Graph tags for better social sharing
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogTitle) ogTitle.setAttribute('content', title);
+    if (ogDescription) ogDescription.setAttribute('content', description);
+  }, [view, selectedVideo]);
+
   const handleNavigateHome = () => {
     setView('home');
     setSearchQuery('');
